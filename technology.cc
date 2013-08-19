@@ -1129,6 +1129,7 @@ void init_tech_params(double technology, bool is_tag)
       gmp_to_gmn_multiplier_periph_global += curr_alpha * gmp_to_gmn_multiplier[peri_global_tech_type];
 
       g_tp.sram_cell.Vdd       += curr_alpha * vdd[ram_cell_tech_type];
+		g_tp.sram_cell.nominalVdd += curr_alpha * vdd[ram_cell_tech_type]; //MWG
       g_tp.sram_cell.l_phy     += curr_alpha * Lphy[ram_cell_tech_type];
       g_tp.sram_cell.l_elec    += curr_alpha * Lelec[ram_cell_tech_type];
       g_tp.sram_cell.t_ox      += curr_alpha * t_ox[ram_cell_tech_type];

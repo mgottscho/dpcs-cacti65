@@ -236,7 +236,7 @@ void * calc_time_mt_wrapper(void * void_obj)
 }
 
 
-
+//MWG: This function is used by the CACTI solver to evaluate metrics for different cache configs.
 bool calculate_time(
     bool is_tag,
     int pure_ram,
@@ -259,7 +259,10 @@ bool calculate_time(
     return false;
   }
 
-  UCA * uca = new UCA(dyn_p);
+  UCA * uca = new UCA(dyn_p); //MWG: The high-level UCA structure instantiated here
+  //ptr_array->associated_uca = new UCA(dyn_p); //MWG: for our needs we don't want to discard UCA objects, keep them tied to the mem_array objects
+  //ptr_array->orig_dyn_p = dyn_p; //MWG
+  //UCA *uca = ptr_array->associated_uca; //MWG
 
   if (flag_results_populate)
   { //For the final solution, populate the ptr_results data structure  -- TODO: copy only necessary variables
@@ -341,7 +344,7 @@ bool calculate_time(
     ptr_array->precharge_delay = uca->precharge_delay;
   }
 
-  delete uca;
+  delete uca; //MWG
   return true;
 }
 
@@ -575,6 +578,7 @@ void filter_data_arr(list<mem_array *> & curr_list)
  *    above results 
  * 4. Cache model with least cost is picked from sol_list
  */
+ //MWG: This is the entry point into solving optimal configuration.
 void solve(uca_org_t *fin_res)
 {
   bool   is_dram  = false;

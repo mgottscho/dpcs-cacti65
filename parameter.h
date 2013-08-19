@@ -62,21 +62,22 @@ class TechnologyParameter
     double C_junc_sidewall;
     double l_phy;
     double l_elec;
-    double R_nch_on;
-    double R_pch_on;
-    double Vdd;
+    double R_nch_on; //MWG: This needs to be updated manually if we change Vdd
+    double R_pch_on; //MWG: This needs to be updated manually if we change Vdd
+    double Vdd; //MWG: Scale me
+	 double nominalVdd; //MWG: Set to the default
     double Vth;
-    double I_on_n;
-    double I_on_p;
-    double I_off_n;
-    double I_off_p;
+    double I_on_n; //MWG: This needs to be updated manually if we change Vdd
+    double I_on_p; //MWG: This needs to be updated manually if we change Vdd
+    double I_off_n; //MWG: This needs to be updated manually if we change Vdd
+    double I_off_p; //MWG: This needs to be updated manually if we change Vdd
     double C_ox;
     double t_ox;
     double n_to_p_eff_curr_drv_ratio;
 
     DeviceType(): C_g_ideal(0), C_fringe(0), C_overlap(0), C_junc(0),
                   C_junc_sidewall(0), l_phy(0), l_elec(0), R_nch_on(0), R_pch_on(0), 
-                  Vdd(0), Vth(0),
+                  Vdd(0), nominalVdd(0), Vth(0), //MWG
                   I_on_n(0), I_on_p(0), I_off_n(0), I_off_p(0),
                   C_ox(0), t_ox(0), n_to_p_eff_curr_drv_ratio(0) { };
     void reset()
@@ -90,6 +91,7 @@ class TechnologyParameter
       R_nch_on  = 0;
       R_pch_on  = 0;
       Vdd       = 0;
+		nominalVdd = 0; //MWG
       Vth       = 0;
       I_on_n    = 0;
       I_on_p    = 0;
