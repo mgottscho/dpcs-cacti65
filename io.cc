@@ -635,20 +635,22 @@ uca_org_t cacti_interface(const string & infile_name)
   //MWG: Now we have done a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config.
  // vddscaled_res = new uca_org_t(fin_res);
  double scaled_vdd = 1.0;
-  for (int i = 19; i >= 0; i--) { //MWG: loop through all data array scaled values
+  for (int i = 19; i >= 5; i--) { //MWG: loop through all data array scaled values
 	  g_tp.sram_cell.Vdd = scaled_vdd;
 		//recompute here
+	  g_tp.sram_cell.I_on_n = 26668e6 * 3.77e-14 / 0.35 * ((g_tp.sram_cell.Vdd - 0.18) * 9.38e-2 - (9.38e-2 * 9.38e-2)/2);
+	  g_tp.sram_cell.I_on_p = g_tp.sram_cell.I_on_n / 2;
+	  g_tp.sram_cell.R_nch_on = 1.51 * g_tp.sram_cell.Vdd / g_tp.sram_cell.I_on_n;
+	  g_tp.sram_cell.R_pch_on = 2.41 * g_tp.sram_cell.R_nch_on;
+	  g_tp.sram_cell.I_off_n = 5.69e-7 * pow(10,-0.15*(g_tp.sram_cell.nominalVdd - g_tp.sram_cell.Vdd)*1000/100);
+
 	  calculate_time(false, 0, fin_res.data_array2->Nspd, fin_res.data_array2->Ndwl, fin_res.data_array2->Ndbl, fin_res.data_array2->deg_bl_muxing, fin_res.data_array2->Ndsam_lev_1, fin_res.data_array2->Ndsam_lev_2, fin_res.data_array2, 0, NULL, NULL, 0);
 	  fin_res.find_delay();
 	  fin_res.find_energy();
 	  fin_res.find_area();
 	  fin_res.find_cyc();
-	  cout << "MWG SRAM CELL VDD = " << scaled_vdd << endl;
-	  cout << "fin_res.data_array2->area = " << fin_res.data_array2->area << endl;
-	  cout << "fin_res.data_array2->power->readOp->leakage = " << fin_res.data_array2->power.readOp.leakage << endl;
-	  cout << "fin_res.data_array2->access_time = " << fin_res.data_array2->access_time << endl;
-	  cout << "fin_res.data_array2->cycle_time = " << fin_res.data_array2->cycle_time << endl;
-	  //output_UCA(&fin_res);
+	  cout << "************************ SRAM CELL VDD = " << scaled_vdd << endl;
+	  output_UCA(&fin_res);
 	  scaled_vdd -= 0.05;
   }
 
