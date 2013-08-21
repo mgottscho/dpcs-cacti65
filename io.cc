@@ -607,20 +607,27 @@ powerDef operator+(const powerDef & x, const powerDef & y)
 
 uca_org_t cacti_interface(const string & infile_name)
 {
+	double scaled_vdd = 0; //MWG
 
   uca_org_t fin_res;
 //  uca_org_t result;
-  //uca_org_t vddscaled_res; //MWG
   fin_res.valid = false;
 
   g_ip = new InputParameter();
   g_ip->parse_cfg(infile_name);
   if (g_ip->error_checking() == false) exit(0);
-  if (g_ip->print_input_args) 
+  if (g_ip->print_input_args) {
+	 cout << "****************** INPUT ARGUMENTS ***************" << endl; //MWG
     g_ip->display_ip();
+	 cout << "**************************************************" << endl; //MWG
+  }
 
   init_tech_params(g_ip->F_sz_um, false);
   Wire winit; // Do not delete this line. It initializes wires.
+  
+  cout << endl << "**************** TECHNOLOGY PARAMETERS *****************" << endl; //MWG
+  g_tp.display(0); //MWG
+  cout << "********************************************************" << endl; //MWG
 
   if (g_ip->nuca == 1)
   {
@@ -629,28 +636,48 @@ uca_org_t cacti_interface(const string & infile_name)
   }
 //  g_ip->display_ip();
   solve(&fin_res);
+  output_data_csv(fin_res); //MWG
+  scaled_vdd = g_tp.sram_cell.nominal_Vdd;
+  cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //MWG
+  cout << endl << "********* VOLTAGE-SCALED SRAM CELL PARAMETERS **********" << endl; //MWG
+  display_sram_cell_params(); //MWG
+  cout << "********************************************************" << endl; //MWG
 
+
+  cout << endl << "******************** CACHE DATA ************************" << endl; //MWG
   output_UCA(&fin_res);
+  cout << "********************************************************" << endl; //MWG
 
-  //MWG: Now we have done a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config.
- // vddscaled_res = new uca_org_t(fin_res);
- double scaled_vdd = 1.0;
-  for (int i = 19; i >= 5; i--) { //MWG: loop through all data array scaled values
+  /*MWG: Now we have done a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config. */
+  scaled_vdd -= 0.05;
+  for (int i = 18; i >= 5; i--) { //MWG: loop through all data array scaled values
 	  g_tp.sram_cell.Vdd = scaled_vdd;
-		//recompute here
-	  g_tp.sram_cell.I_on_n = 26668e6 * 3.77e-14 / 0.35 * ((g_tp.sram_cell.Vdd - 0.18) * 9.38e-2 - (9.38e-2 * 9.38e-2)/2);
-	  g_tp.sram_cell.I_on_p = g_tp.sram_cell.I_on_n / 2;
-	  g_tp.sram_cell.R_nch_on = 1.51 * g_tp.sram_cell.Vdd / g_tp.sram_cell.I_on_n;
-	  g_tp.sram_cell.R_pch_on = 2.41 * g_tp.sram_cell.R_nch_on;
-	  g_tp.sram_cell.I_off_n = 5.69e-7 * pow(10,-0.15*(g_tp.sram_cell.nominalVdd - g_tp.sram_cell.Vdd)*1000/100);
+	  //Update sram cell technology parameters for the scaled VDD...
 
+		//MWG: On current: Rabaey model, assumed velocity saturated. See constants defined in const.h
+	  g_tp.sram_cell.I_on_n =  I_ON_CONST * ((g_tp.sram_cell.Vdd - g_tp.sram_cell.Vth)*g_tp.sram_cell.nominal_Vdsat - (g_tp.sram_cell.nominal_Vdsat) * (g_tp.sram_cell.nominal_Vdsat)/2) * (1+LAMBDA * g_tp.sram_cell.Vdd);
+	  
+	  //Resistance: CACTI model
+	  g_tp.sram_cell.R_nch_on = 1.51 * g_tp.sram_cell.Vdd / g_tp.sram_cell.I_on_n; //leading constant taken from technology.cc
+	  g_tp.sram_cell.R_pch_on = 2.41 * g_tp.sram_cell.R_nch_on; //leading constant taken from technology.cc
+	  
+	  //Off (leakage) current: Weste model
+	  g_tp.sram_cell.I_off_n = g_tp.sram_cell.nominal_I_off_n * pow(10,-ETA*(g_tp.sram_cell.nominal_Vdd - g_tp.sram_cell.Vdd)*1000/SS);
+
+	  //Recompute everything but do not change any configurations. We have already found optimal cache config under nominal conditions
 	  calculate_time(false, 0, fin_res.data_array2->Nspd, fin_res.data_array2->Ndwl, fin_res.data_array2->Ndbl, fin_res.data_array2->deg_bl_muxing, fin_res.data_array2->Ndsam_lev_1, fin_res.data_array2->Ndsam_lev_2, fin_res.data_array2, 0, NULL, NULL, 0);
 	  fin_res.find_delay();
 	  fin_res.find_energy();
 	  fin_res.find_area();
 	  fin_res.find_cyc();
-	  cout << "************************ SRAM CELL VDD = " << scaled_vdd << endl;
+
+	  cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //MWG
+	  cout << endl << "********* VOLTAGE-SCALED SRAM CELL PARAMETERS **********" << endl; //MWG
+	  display_sram_cell_params(); //MWG
+	  cout << "********************************************************" << endl; //MWG
+	  cout << endl << "******************** CACHE DATA ************************" << endl; //MWG
 	  output_UCA(&fin_res);
+	  cout << "********************************************************" << endl; //MWG
 	  scaled_vdd -= 0.05;
   }
 

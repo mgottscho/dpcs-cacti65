@@ -64,17 +64,29 @@ void TechnologyParameter::DeviceType::display(uint32_t indent)
   cout << indent_str << "C_junc    = " << setw(12) << C_junc    << " F/um^2" << endl;
   cout << indent_str << "l_phy     = " << setw(12) << l_phy     << " um" << endl;
   cout << indent_str << "l_elec    = " << setw(12) << l_elec    << " um" << endl;
-  cout << indent_str << "R_nch_on  = " << setw(12) << R_nch_on  << " ohm-um" << endl;
-  cout << indent_str << "R_pch_on  = " << setw(12) << R_pch_on  << " ohm-um" << endl;
-  cout << indent_str << "Vdd       = " << setw(12) << Vdd       << " V" << endl;
+  cout << indent_str << "R_nch_on  = " << setw(12) << R_nch_on  << " ohm-um" << setw(12) << "(nominal " << nominal_R_nch_on << " ohm-um)" << endl; //MWG
+  cout << indent_str << "R_pch_on  = " << setw(12) << R_pch_on  << " ohm-um" << setw(12) << "(nominal " << nominal_R_pch_on << " ohm-um)" << endl; //MWG
+  cout << indent_str << "Vdd  = " << setw(12) << Vdd  << " V" << setw(12) << "(nominal " << nominal_Vdd << " V)" << endl; //MWG
   cout << indent_str << "Vth       = " << setw(12) << Vth       << " V" << endl;
-  cout << indent_str << "I_on_n    = " << setw(12) << I_on_n    << " A/um" << endl;
-  cout << indent_str << "I_on_p    = " << setw(12) << I_on_p    << " A/um" << endl;
-  cout << indent_str << "I_off_n   = " << setw(12) << I_off_n   << " A/um" << endl;
-  cout << indent_str << "I_off_p   = " << setw(12) << I_off_p   << " A/um" << endl;
+  cout << indent_str << "Vdsat       = " << setw(12) << nominal_Vdsat       << " V" << endl;
+  cout << indent_str << "I_on_n	  = " << setw(12) << I_on_n  << " A/um" << setw(12) << "(nominal " << nominal_I_on_n << " A/um)" << endl; //MWG
+  cout << indent_str << "I_on_p	  = " << setw(12) << I_on_p  << " A/um" << setw(12) << "(nominal " << nominal_I_on_p << " A/um)" << endl; //MWG
+  cout << indent_str << "I_off_n	  = " << setw(12) << I_off_n  << " A/um" << setw(12) << "(nominal " << nominal_I_off_n << " A/um)" << endl; //MWG
+  cout << indent_str << "I_off_p	  = " << setw(12) << I_off_p  << " A/um" << setw(12) << "(nominal " << nominal_I_off_p << " A/um)" << endl; //MWG
   cout << indent_str << "C_ox      = " << setw(12) << C_ox      << " F/um^2" << endl;
   cout << indent_str << "t_ox      = " << setw(12) << t_ox      << " um" << endl;
   cout << indent_str << "n_to_p_eff_curr_drv_ratio = " << n_to_p_eff_curr_drv_ratio << endl;
+}
+
+//MWG
+void display_sram_cell_params() {
+	  cout << "\t" << "R_nch_on  = " << setw(12) << g_tp.sram_cell.R_nch_on  << " ohm-um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_R_nch_on << " ohm-um)" << endl; //MWG
+	  cout << "\t" << "R_pch_on  = " << setw(12) << g_tp.sram_cell.R_pch_on  << " ohm-um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_R_pch_on << " ohm-um)" << endl; //MWG
+	  cout << "\t" << "Vdd  = " << setw(12) << g_tp.sram_cell.Vdd  << " V" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_Vdd << " V)" << endl; //MWG
+	  cout << "\t" << "I_on_n	  = " << setw(12) << g_tp.sram_cell.I_on_n  << " A/um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_I_on_n << " A/um)" << endl; //MWG
+	  //cout << "\t" << "I_on_p	  = " << setw(12) << g_tp.sram_cell.I_on_p  << " A/um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_I_on_p << " A/um)" << endl; //MWG
+	  cout << "\t" << "I_off_n	  = " << setw(12) << g_tp.sram_cell.I_off_n  << " A/um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_I_off_n << " A/um)" << endl; //MWG
+	  //cout << "\t" << "I_off_p	  = " << setw(12) << g_tp.sram_cell.I_off_p  << " A/um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_I_off_p << " A/um)" << endl; //MWG
 }
 
 

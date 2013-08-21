@@ -75,7 +75,10 @@ const unsigned int MAXSUBARRAYS = 1048576;  // maximum subarrays for data and ta
 const unsigned int MAXDATASPD   = 256;      // maximum for Nspd
 const unsigned int MAX_COL_MUX  = 256;
 
-
+const double LAMBDA = 0.1; //MWG: assumed CLM parameter
+const double ETA = 0.15; //MWG: assumed DIBL factor
+const double SS = 100; //MWG: assumed subthreshold slope, mV/decade
+const double I_ON_CONST = 0.02566085; //MWG: pre-calculated k'W/L factor for Rabaey on-current model
 
 #define ROUTER_TYPES 3
 #define WIRE_TYPES 6

@@ -47,8 +47,6 @@
 #include <vector>
 #include <list>
 #include "const.h" 
-//#include "uca.h" //MWG
-//#include "parameter.h" //MWG
 
 using namespace std;
 
@@ -450,10 +448,6 @@ class mem_array
   double precharge_delay;
 
   static bool lt(const mem_array * m1, const mem_array * m2);
-	 
-  //UCA *associated_uca; //MWG: Pointer to UCA structure which is associated with the mem array (generated its results)
-  //DynamicParameter orig_dyn_p; //MWG
-
 };
 
 
