@@ -637,6 +637,30 @@ uca_org_t cacti_interface(const string & infile_name)
 //  g_ip->display_ip();
   solve(&fin_res);
   output_data_csv(fin_res); //MWG
+
+	//MWG file
+  fstream file("dpcs_cacti.csv", ios::out);
+  if (file.fail() == true)
+  {
+    cerr << "File dpcs_cacti.csv could not be opened successfully" << endl;
+  }
+	file << "Data array voltage (V), ";
+	file << "SRAM cell nfet on current (A), ";
+	file << "SRAM cell nfet off current (A), ";
+	file << "SRAM cell pfet on current UNUSED (A), ";
+	file << "SRAM cell pfet off current UNUSED (A), ";
+	file << "SRAM cell nfet on resistance (ohm-um), ";
+	file << "SRAM cell pfet on resistance (ohm-um), ";
+	file << "Access time (ns), ";
+	file << "Cycle time (ns), ";
+	file << "Dynamic read energy per access (nJ), ";
+	file << "Leakage power data cells (mW), ";
+	file << "Leakage current per data cell (A), ";
+	file << "Leakage power data bank (mW), ";
+	file << "Leakage power tag bank (mW), ";
+	file << "Total leakage power (mW), ";
+	file << "Data array leakage proportion" << endl;
+
   scaled_vdd = g_tp.sram_cell.nominal_Vdd;
   cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //MWG
   cout << endl << "********* VOLTAGE-SCALED SRAM CELL PARAMETERS **********" << endl; //MWG
@@ -651,18 +675,38 @@ uca_org_t cacti_interface(const string & infile_name)
   /*MWG: Now we have done a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config. */
   scaled_vdd -= 0.05;
   for (int i = 18; i >= 5; i--) { //MWG: loop through all data array scaled values
+		//Now output relevant statistics to a file for post-processing
+		file << g_tp.sram_cell.Vdd << ", ";
+		file << g_tp.sram_cell.I_on_n << ", ";
+		file << g_tp.sram_cell.I_off_n << ", ";
+		file << g_tp.sram_cell.I_on_p << ", ";
+		file << g_tp.sram_cell.I_off_p << ", ";
+		file << g_tp.sram_cell.R_nch_on << ", ";
+		file << g_tp.sram_cell.R_pch_on << ", ";
+		file << fin_res.access_time*1e9 << ", ";
+		file << fin_res.cycle_time*1e9 << ", ";
+		file << fin_res.power.readOp.dynamic*1e9 << ", ";
+		file << fin_res.data_array2->power_bitlines.readOp.leakage * 1e3 << ", ";
+		file << fin_res.data_array2->power_bitlines.readOp.leakage/g_tp.sram_cell.Vdd/(g_ip->cache_sz*8) << ", ";
+		file << fin_res.data_array2->power.readOp.leakage * 1e3 << ", ";
+		file << fin_res.tag_array2->power.readOp.leakage * 1e3 << ", ";
+		file << fin_res.power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
+		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.power.readOp.leakage << endl;
+	  
 	  g_tp.sram_cell.Vdd = scaled_vdd;
 	  //Update sram cell technology parameters for the scaled VDD...
 
 		//MWG: On current: Rabaey model, assumed velocity saturated. See constants defined in const.h
 	  g_tp.sram_cell.I_on_n =  I_ON_CONST * ((g_tp.sram_cell.Vdd - g_tp.sram_cell.Vth)*g_tp.sram_cell.nominal_Vdsat - (g_tp.sram_cell.nominal_Vdsat) * (g_tp.sram_cell.nominal_Vdsat)/2) * (1+LAMBDA * g_tp.sram_cell.Vdd);
+	  g_tp.sram_cell.I_on_p = g_tp.sram_cell.I_on_n / 2;
 	  
 	  //Resistance: CACTI model
 	  g_tp.sram_cell.R_nch_on = 1.51 * g_tp.sram_cell.Vdd / g_tp.sram_cell.I_on_n; //leading constant taken from technology.cc
 	  g_tp.sram_cell.R_pch_on = 2.41 * g_tp.sram_cell.R_nch_on; //leading constant taken from technology.cc
 	  
 	  //Off (leakage) current: Weste model
-	  g_tp.sram_cell.I_off_n = g_tp.sram_cell.nominal_I_off_n * pow(10,-ETA*(g_tp.sram_cell.nominal_Vdd - g_tp.sram_cell.Vdd)*1000/SS);
+	  g_tp.sram_cell.I_off_n = g_tp.sram_cell.nominal_I_off_n * pow(10,(-ETA*(g_tp.sram_cell.nominal_Vdd - g_tp.sram_cell.Vdd)*1000)/SS);
+	  g_tp.sram_cell.I_off_p = g_tp.sram_cell.I_off_n;
 
 	  //Recompute everything but do not change any configurations. We have already found optimal cache config under nominal conditions
 	  calculate_time(false, 0, fin_res.data_array2->Nspd, fin_res.data_array2->Ndwl, fin_res.data_array2->Ndbl, fin_res.data_array2->deg_bl_muxing, fin_res.data_array2->Ndsam_lev_1, fin_res.data_array2->Ndsam_lev_2, fin_res.data_array2, 0, NULL, NULL, 0);
@@ -678,9 +722,28 @@ uca_org_t cacti_interface(const string & infile_name)
 	  cout << endl << "******************** CACHE DATA ************************" << endl; //MWG
 	  output_UCA(&fin_res);
 	  cout << "********************************************************" << endl; //MWG
+	
 	  scaled_vdd -= 0.05;
   }
 
+	file << g_tp.sram_cell.Vdd << ", ";
+	file << g_tp.sram_cell.I_on_n << ", ";
+	file << g_tp.sram_cell.I_off_n << ", ";
+	file << g_tp.sram_cell.I_on_p << ", ";
+	file << g_tp.sram_cell.I_off_p << ", ";
+	file << g_tp.sram_cell.R_nch_on << ", ";
+	file << g_tp.sram_cell.R_pch_on << ", ";
+	file << fin_res.access_time*1e9 << ", ";
+	file << fin_res.cycle_time*1e9 << ", ";
+	file << fin_res.power.readOp.dynamic*1e9 << ", ";
+	file << fin_res.data_array2->power_bitlines.readOp.leakage * 1e3 << ", ";
+	file << fin_res.data_array2->power_bitlines.readOp.leakage/g_tp.sram_cell.Vdd/(g_ip->cache_sz*8) << ", ";
+	file << fin_res.data_array2->power.readOp.leakage * 1e3 << ", ";
+	file << fin_res.tag_array2->power.readOp.leakage * 1e3 << ", ";
+	file << fin_res.power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
+	file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.power.readOp.leakage << endl;
+
+  file.close();
 
   delete (g_ip);
   return fin_res;
@@ -1059,81 +1122,75 @@ bool InputParameter::error_checking()
 
 void output_data_csv(const uca_org_t & fin_res)
 {
-  fstream file("out.csv", ios::in);
-  bool    print_index = file.fail();
-  file.close();
 
-  file.open("out.csv", ios::out|ios::app);
+  fstream file("out.csv", ios::out); //MWG
   if (file.fail() == true)
   {
     cerr << "File out.csv could not be opened successfully" << endl;
   }
   else
   {
-    if (print_index == true)
-    {
-      file << "Tech node (nm), ";
-      file << "Capacity (bytes), ";
-      file << "Number of banks, ";
-      file << "Associativity, ";
-      file << "Output width (bits), ";
-      file << "Access time (ns), ";
-      file << "Random cycle time (ns), ";
-      file << "Multisubbank interleave cycle time (ns), ";
-      file << "Delay request network (ns), ";
-      file << "Delay inside mat (ns), ";
-      file << "Delay reply network (ns), ";
-      file << "Tag array access time (ns), ";
-      file << "Refresh period (microsec), ";
-      file << "DRAM array availability (%), ";
-      file << "Dynamic read energy (nJ), ";
-      file << "Dynamic write energy (nJ), ";
-      file << "Dynamic read power (mW), ";
-      file << "Standby leakage per bank(mW), ";
-      file << "Leakage per bank with leak power management (mW), ";
-      file << "Refresh power as percentage of standby leakage, ";
-      file << "Area (mm2), ";
-      file << "Ndwl, ";
-      file << "Ndbl, ";
-      file << "Nspd, ";
-      file << "Ndcm, ";
-      file << "Ndsam_level_1, ";
-      file << "Ndsam_level_2, ";
-      file << "Ntwl, ";
-      file << "Ntbl, ";
-      file << "Ntspd, ";
-      file << "Ntcm, ";
-      file << "Ntsam_level_1, ";
-      file << "Ntsam_level_2, ";
-      file << "Area efficiency, ";
-      file << "Resistance per unit micron (ohm-micron), ";
-      file << "Capacitance per unit micron (fF per micron), ";
-      file << "Unit-length wire delay (ps), ";
-      file << "FO4 delay (ps), ";
-      file << "delay route to bank (including crossb delay) (ps), ";
-      file << "Crossbar delay (ps), ";
-      file << "Dyn read energy per access from closed page (nJ), ";
-      file << "Dyn read energy per access from open page (nJ), ";
-      file << "Leak power of an subbank with page closed (mW), ";
-      file << "Leak power of a subbank with page  open (mW), ";
-      file << "Leak power of request and reply networks (mW), ";
-      file << "Number of subbanks, ";
-      file << "Page size in bits, ";
-      file << "Activate power, ";
-      file << "Read power, ";
-      file << "Write power, ";
-      file << "Precharge power, ";
-      file << "tRCD, ";
-      file << "CAS latency, ";
-      file << "Precharge delay, ";
-      file << "Perc dyn energy bitlines, ";
-      file << "perc dyn energy wordlines, ";
-      file << "perc dyn energy outside mat, ";
-      file << "Area opt (perc), ";
-      file << "Delay opt (perc), ";
-      file << "Repeater opt (perc), ";
-      file << "Aspect ratio" << endl;
-    }
+	file << "Tech node (nm), ";
+	file << "Capacity (bytes), ";
+	file << "Number of banks, ";
+	file << "Associativity, ";
+	file << "Output width (bits), ";
+	file << "Access time (ns), ";
+	file << "Random cycle time (ns), ";
+	file << "Multisubbank interleave cycle time (ns), ";
+	file << "Delay request network (ns), ";
+	file << "Delay inside mat (ns), ";
+	file << "Delay reply network (ns), ";
+	file << "Tag array access time (ns), ";
+	file << "Refresh period (microsec), ";
+	file << "DRAM array availability (%), ";
+	file << "Dynamic read energy (nJ), ";
+	file << "Dynamic write energy (nJ), ";
+	file << "Dynamic read power (mW), ";
+	file << "Standby leakage per bank(mW), ";
+	file << "Leakage per bank with leak power management (mW), ";
+	file << "Refresh power as percentage of standby leakage, ";
+	file << "Area (mm2), ";
+	file << "Ndwl, ";
+	file << "Ndbl, ";
+	file << "Nspd, ";
+	file << "Ndcm, ";
+	file << "Ndsam_level_1, ";
+	file << "Ndsam_level_2, ";
+	file << "Ntwl, ";
+	file << "Ntbl, ";
+	file << "Ntspd, ";
+	file << "Ntcm, ";
+	file << "Ntsam_level_1, ";
+	file << "Ntsam_level_2, ";
+	file << "Area efficiency, ";
+	file << "Resistance per unit micron (ohm-micron), ";
+	file << "Capacitance per unit micron (fF per micron), ";
+	file << "Unit-length wire delay (ps), ";
+	file << "FO4 delay (ps), ";
+	file << "delay route to bank (including crossb delay) (ps), ";
+	file << "Crossbar delay (ps), ";
+	file << "Dyn read energy per access from closed page (nJ), ";
+	file << "Dyn read energy per access from open page (nJ), ";
+	file << "Leak power of an subbank with page closed (mW), ";
+	file << "Leak power of a subbank with page  open (mW), ";
+	file << "Leak power of request and reply networks (mW), ";
+	file << "Number of subbanks, ";
+	file << "Page size in bits, ";
+	file << "Activate power, ";
+	file << "Read power, ";
+	file << "Write power, ";
+	file << "Precharge power, ";
+	file << "tRCD, ";
+	file << "CAS latency, ";
+	file << "Precharge delay, ";
+	file << "Perc dyn energy bitlines, ";
+	file << "perc dyn energy wordlines, ";
+	file << "perc dyn energy outside mat, ";
+	file << "Area opt (perc), ";
+	file << "Delay opt (perc), ";
+	file << "Repeater opt (perc), ";
+	file << "Aspect ratio" << endl;
     file << g_ip->F_sz_nm << ", ";
     file << g_ip->cache_sz << ", ";
     file << g_ip->nbanks << ", ";

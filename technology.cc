@@ -1132,8 +1132,6 @@ void init_tech_params(double technology, bool is_tag)
         += curr_alpha * n_to_p_eff_curr_drv_ratio[peri_global_tech_type];
       g_tp.peri_global.I_off_n   += curr_alpha * I_off_n[peri_global_tech_type][g_ip->temp - 300];
       g_tp.peri_global.nominal_I_off_n   += curr_alpha * I_off_n[peri_global_tech_type][g_ip->temp - 300]; //MWG
-      g_tp.peri_global.I_off_p   += curr_alpha * I_off_n[peri_global_tech_type][g_ip->temp - 300];
-      g_tp.peri_global.nominal_I_off_p   += curr_alpha * I_off_n[peri_global_tech_type][g_ip->temp - 300]; //MWG
       gmp_to_gmn_multiplier_periph_global += curr_alpha * gmp_to_gmn_multiplier[peri_global_tech_type];
 
       g_tp.sram_cell.Vdd       += curr_alpha * vdd[ram_cell_tech_type];
@@ -1156,6 +1154,8 @@ void init_tech_params(double technology, bool is_tag)
       g_tp.sram_cell.n_to_p_eff_curr_drv_ratio += curr_alpha * n_to_p_eff_curr_drv_ratio[ram_cell_tech_type];
       g_tp.sram_cell.I_off_n   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300];
       g_tp.sram_cell.nominal_I_off_n   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300]; //MWG
+      g_tp.sram_cell.I_off_p   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300]; //MWG
+      g_tp.sram_cell.nominal_I_off_p   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300]; //MWG
       
 		g_tp.dram_cell_Vdd      += curr_alpha * curr_vdd_dram_cell;
       g_tp.dram_acc.Vth       += curr_alpha * curr_v_th_dram_access_transistor;
