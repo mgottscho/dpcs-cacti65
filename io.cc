@@ -677,7 +677,7 @@ uca_org_t cacti_interface(const string & infile_name)
 
   /*MWG: Now we have done a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config. */
   scaled_vdd -= 0.05;
-  for (int i = 18; i >= 5; i--) { //MWG: loop through all data array scaled values
+  for (int i = 18; i >= 4; i--) { //MWG: loop through all data array scaled values
 		//Now output relevant statistics to a file for post-processing
 		file << g_tp.sram_cell.Vdd << ", ";
 		file << g_tp.sram_cell.I_on_n << ", ";
