@@ -659,7 +659,8 @@ uca_org_t cacti_interface(const string & infile_name)
 	file << "Leakage power data bank (mW), ";
 	file << "Leakage power tag bank (mW), ";
 	file << "Total leakage power (mW), ";
-	file << "Data array leakage proportion" << endl;
+	file << "Data cells / data array power, ";
+	file << "Data cells / total power" << endl;
 
   scaled_vdd = g_tp.sram_cell.nominal_Vdd;
   cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //MWG
@@ -691,7 +692,8 @@ uca_org_t cacti_interface(const string & infile_name)
 		file << fin_res.data_array2->power.readOp.leakage * 1e3 << ", ";
 		file << fin_res.tag_array2->power.readOp.leakage * 1e3 << ", ";
 		file << fin_res.power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
-		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.data_array2->power.readOp.leakage << endl;
+		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.data_array2->power.readOp.leakage << ", ";
+		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.power.readOp.leakage << endl;
 	  
 	  g_tp.sram_cell.Vdd = scaled_vdd;
 	  //Update sram cell technology parameters for the scaled VDD...
@@ -726,22 +728,23 @@ uca_org_t cacti_interface(const string & infile_name)
 	  scaled_vdd -= 0.05;
   }
 
-	file << g_tp.sram_cell.Vdd << ", ";
-	file << g_tp.sram_cell.I_on_n << ", ";
-	file << g_tp.sram_cell.I_off_n << ", ";
-	file << g_tp.sram_cell.I_on_p << ", ";
-	file << g_tp.sram_cell.I_off_p << ", ";
-	file << g_tp.sram_cell.R_nch_on << ", ";
-	file << g_tp.sram_cell.R_pch_on << ", ";
-	file << fin_res.access_time*1e9 << ", ";
-	file << fin_res.cycle_time*1e9 << ", ";
-	file << fin_res.power.readOp.dynamic*1e9 << ", ";
-	file << fin_res.data_array2->power_bitlines.readOp.leakage * 1e3 << ", ";
-	file << fin_res.data_array2->power_bitlines.readOp.leakage/g_tp.sram_cell.Vdd/(g_ip->cache_sz*8) << ", ";
-	file << fin_res.data_array2->power.readOp.leakage * 1e3 << ", ";
-	file << fin_res.tag_array2->power.readOp.leakage * 1e3 << ", ";
-	file << fin_res.power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
-	file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.power.readOp.leakage << endl;
+		file << g_tp.sram_cell.Vdd << ", ";
+		file << g_tp.sram_cell.I_on_n << ", ";
+		file << g_tp.sram_cell.I_off_n << ", ";
+		file << g_tp.sram_cell.I_on_p << ", ";
+		file << g_tp.sram_cell.I_off_p << ", ";
+		file << g_tp.sram_cell.R_nch_on << ", ";
+		file << g_tp.sram_cell.R_pch_on << ", ";
+		file << fin_res.access_time*1e9 << ", ";
+		file << fin_res.cycle_time*1e9 << ", ";
+		file << fin_res.power.readOp.dynamic*1e9 << ", ";
+		file << fin_res.data_array2->power_bitlines.readOp.leakage * 1e3 << ", ";
+		file << fin_res.data_array2->power_bitlines.readOp.leakage/g_tp.sram_cell.Vdd/(g_ip->cache_sz*8) << ", ";
+		file << fin_res.data_array2->power.readOp.leakage * 1e3 << ", ";
+		file << fin_res.tag_array2->power.readOp.leakage * 1e3 << ", ";
+		file << fin_res.power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
+		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.data_array2->power.readOp.leakage << ", ";
+		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.power.readOp.leakage << endl;
 
   file.close();
 
