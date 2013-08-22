@@ -691,7 +691,7 @@ uca_org_t cacti_interface(const string & infile_name)
 		file << fin_res.data_array2->power.readOp.leakage * 1e3 << ", ";
 		file << fin_res.tag_array2->power.readOp.leakage * 1e3 << ", ";
 		file << fin_res.power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
-		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.power.readOp.leakage << endl;
+		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.data_array2->power.readOp.leakage << endl;
 	  
 	  g_tp.sram_cell.Vdd = scaled_vdd;
 	  //Update sram cell technology parameters for the scaled VDD...
