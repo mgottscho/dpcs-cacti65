@@ -62,7 +62,7 @@ since that's bigger then the 36 bits on the Pentium 4
 and 40 bits on the Opteron
 */
 const int ADDRESS_BITS = 32; //MWG
-const int EXTRA_FM_BITS = 4; //MWG: 1 faulty bit, and 2 FM bits for 3 allowed VDD levels
+const int EXTRA_FM_BITS = 3; //MWG: 1 faulty bit, and 2 FM bits for 3 allowed VDD levels
 /*dt: In addition to the tag bits, the tags also include 1 valid bit, 1 dirty bit, 2 bits for a 4-state 
   cache coherency protocoll (MESI), 1 bit for MRU (change this to log(ways) for full LRU). 
   So in total we have 1 + 1 + 2 + 1 = 5 */
