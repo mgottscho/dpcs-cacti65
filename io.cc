@@ -624,6 +624,57 @@ uca_org_t cacti_interface(const string & infile_name)
 
   init_tech_params(g_ip->F_sz_um, false);
   Wire winit; // Do not delete this line. It initializes wires.
+
+  //MWG
+  FILE *fp = fopen("configs/nmos_on_current.csv", "r");
+  char line[128];
+  int voltages[101];
+  float on_current[101];
+  float off_current[101];
+  int i = 0;
+  if(!fp) {
+    cout << "Couldn't open nmos_on_current.csv!\n";
+    exit(-1);
+  }
+  while(fscanf(fp, "%[^\n]\n", line) != EOF) {
+	  sscanf(line, "%d,%f\n", &voltages[i], &on_current[i]);
+	  cout << "voltages[" << i << "] = " << voltages[i] << " on_current = " << on_current[i] << "uA \n";
+	  on_current[i] = on_current[i] * 1e-6;
+	  i++;
+  }
+  fclose(fp);
+  fp = fopen("configs/nmos_off_current.csv", "r");
+  if (!fp) {
+	  cout << "Couldn't open nmos_off_current.csv!\n";
+	  exit(-1);
+  }
+  i = 0;
+  while(fscanf(fp, "%[^\n]\n", line) != EOF) {
+	  sscanf(line, "%d,%f\n", &voltages[i], &off_current[i]);
+	  cout << "voltages[" << i << "] = " << voltages[i] << " off_current = " << off_current[i] << "nA \n";
+	  off_current[i] = off_current[i] * 1e-9;
+	  i++;
+  }
+  scaled_vdd = g_tp.sram_cell.nominal_Vdd;
+  g_tp.sram_cell.Vdd = scaled_vdd;
+  //Update sram cell technology parameters for the scaled VDD...
+
+	//MWG: On current: Rabaey model, assumed velocity saturated. See constants defined in const.h
+ // g_tp.sram_cell.I_on_n =  I_ON_CONST * ((g_tp.sram_cell.Vdd - g_tp.sram_cell.Vth)*g_tp.sram_cell.nominal_Vdsat - (g_tp.sram_cell.nominal_Vdsat) * (g_tp.sram_cell.nominal_Vdsat)/2) * (1+LAMBDA * g_tp.sram_cell.Vdd);
+  g_tp.sram_cell.I_on_n = on_current[i];
+  g_tp.sram_cell.I_on_p = g_tp.sram_cell.I_on_n / 2;
+
+  
+  //Resistance: CACTI model
+  g_tp.sram_cell.R_nch_on = 1.51 * g_tp.sram_cell.Vdd / g_tp.sram_cell.I_on_n; //leading constant taken from technology.cc
+  g_tp.sram_cell.R_pch_on = 2.41 * g_tp.sram_cell.R_nch_on; //leading constant taken from technology.cc
+  
+  //Off (leakage) current: Weste model
+  //g_tp.sram_cell.I_off_n = g_tp.sram_cell.nominal_I_off_n * pow(10,(-ETA*(g_tp.sram_cell.nominal_Vdd - g_tp.sram_cell.Vdd)*1000)/SS);
+  g_tp.sram_cell.I_off_n = off_current[i];
+  g_tp.sram_cell.I_off_p = g_tp.sram_cell.I_off_n;
+
+
   
   cout << endl << "**************** TECHNOLOGY PARAMETERS *****************" << endl; //MWG
   g_tp.display(0); //MWG
@@ -676,8 +727,8 @@ uca_org_t cacti_interface(const string & infile_name)
   cout << "********************************************************" << endl; //MWG
 
   /*MWG: Now we have done a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config. */
-  scaled_vdd -= 0.05;
-  for (int i = 18; i >= 4; i--) { //MWG: loop through all data array scaled values
+  i = 100;
+  for (scaled_vdd = 1.000; scaled_vdd >= 0.199; scaled_vdd-=0.010) { //MWG: loop through all data array scaled values
 		//Now output relevant statistics to a file for post-processing
 		file << g_tp.sram_cell.Vdd << ", ";
 		file << g_tp.sram_cell.I_on_n << ", ";
@@ -703,15 +754,18 @@ uca_org_t cacti_interface(const string & infile_name)
 	  //Update sram cell technology parameters for the scaled VDD...
 
 		//MWG: On current: Rabaey model, assumed velocity saturated. See constants defined in const.h
-	  g_tp.sram_cell.I_on_n =  I_ON_CONST * ((g_tp.sram_cell.Vdd - g_tp.sram_cell.Vth)*g_tp.sram_cell.nominal_Vdsat - (g_tp.sram_cell.nominal_Vdsat) * (g_tp.sram_cell.nominal_Vdsat)/2) * (1+LAMBDA * g_tp.sram_cell.Vdd);
+	 // g_tp.sram_cell.I_on_n =  I_ON_CONST * ((g_tp.sram_cell.Vdd - g_tp.sram_cell.Vth)*g_tp.sram_cell.nominal_Vdsat - (g_tp.sram_cell.nominal_Vdsat) * (g_tp.sram_cell.nominal_Vdsat)/2) * (1+LAMBDA * g_tp.sram_cell.Vdd);
+	  g_tp.sram_cell.I_on_n = on_current[i];
 	  g_tp.sram_cell.I_on_p = g_tp.sram_cell.I_on_n / 2;
+
 	  
 	  //Resistance: CACTI model
 	  g_tp.sram_cell.R_nch_on = 1.51 * g_tp.sram_cell.Vdd / g_tp.sram_cell.I_on_n; //leading constant taken from technology.cc
 	  g_tp.sram_cell.R_pch_on = 2.41 * g_tp.sram_cell.R_nch_on; //leading constant taken from technology.cc
 	  
 	  //Off (leakage) current: Weste model
-	  g_tp.sram_cell.I_off_n = g_tp.sram_cell.nominal_I_off_n * pow(10,(-ETA*(g_tp.sram_cell.nominal_Vdd - g_tp.sram_cell.Vdd)*1000)/SS);
+	  //g_tp.sram_cell.I_off_n = g_tp.sram_cell.nominal_I_off_n * pow(10,(-ETA*(g_tp.sram_cell.nominal_Vdd - g_tp.sram_cell.Vdd)*1000)/SS);
+	  g_tp.sram_cell.I_off_n = off_current[i];
 	  g_tp.sram_cell.I_off_p = g_tp.sram_cell.I_off_n;
 
 	  //Recompute everything but do not change any configurations. We have already found optimal cache config under nominal conditions
@@ -728,8 +782,7 @@ uca_org_t cacti_interface(const string & infile_name)
 	  cout << endl << "******************** CACHE DATA ************************" << endl; //MWG
 	  output_UCA(&fin_res);
 	  cout << "********************************************************" << endl; //MWG
-	
-	  scaled_vdd -= 0.05;
+	  i--;
   }
 
 		file << g_tp.sram_cell.Vdd << ", ";
