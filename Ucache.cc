@@ -235,7 +235,7 @@ void * calc_time_mt_wrapper(void * void_obj)
   pthread_exit(NULL);
 }
 
-//MWG: This function is used by the CACTI solver to evaluate metrics for different cache configs.
+//DPCS: This function is used by the CACTI solver to evaluate metrics for different cache configs.
 bool calculate_time(
     bool is_tag,
     int pure_ram,
@@ -258,7 +258,7 @@ bool calculate_time(
     return false;
   }
 
-  UCA * uca = new UCA(dyn_p); //MWG: The high-level UCA structure instantiated here
+  UCA * uca = new UCA(dyn_p); //DPCS: The high-level UCA structure instantiated here
 
   if (flag_results_populate)
   { //For the final solution, populate the ptr_results data structure  -- TODO: copy only necessary variables
@@ -312,7 +312,7 @@ bool calculate_time(
     ptr_array->power_row_predecoder_blocks.readOp.dynamic = uca->bank.mat.r_predec->block_power.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
 
     ptr_array->power_row_decoders.readOp.dynamic = uca->bank.mat.power_row_decoders.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
-    ptr_array->power_row_decoders.readOp.leakage = uca->bank.mat.power_row_decoders.readOp.leakage * dyn_p.num_mats; //MWG
+    ptr_array->power_row_decoders.readOp.leakage = uca->bank.mat.power_row_decoders.readOp.leakage * dyn_p.num_mats; //DPCS
 
     ptr_array->power_bit_mux_predecoder_drivers.readOp.dynamic = uca->bank.mat.b_mux_predec->driver_power.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
     ptr_array->power_bit_mux_predecoder_blocks.readOp.dynamic  = uca->bank.mat.b_mux_predec->block_power.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
@@ -324,9 +324,9 @@ bool calculate_time(
     ptr_array->power_senseamp_mux_lev_2_predecoder_blocks.readOp.dynamic = uca->bank.mat.sa_mux_lev_2_predec->block_power.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
     ptr_array->power_senseamp_mux_lev_2_decoders.readOp.dynamic = uca->bank.mat.power_sa_mux_lev_2_decoders.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
     ptr_array->power_bitlines.readOp.dynamic = uca->bank.mat.power_bitline.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
-    ptr_array->power_bitlines.readOp.leakage = uca->bank.mat.power_bitline.readOp.leakage * dyn_p.num_mats; //MWG
+    ptr_array->power_bitlines.readOp.leakage = uca->bank.mat.power_bitline.readOp.leakage * dyn_p.num_mats; //DPCS
     ptr_array->power_sense_amps.readOp.dynamic = uca->bank.mat.power_sa.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
-    ptr_array->power_sense_amps.readOp.leakage = uca->bank.mat.power_sa.readOp.leakage * dyn_p.num_mats; //MWG
+    ptr_array->power_sense_amps.readOp.leakage = uca->bank.mat.power_sa.readOp.leakage * dyn_p.num_mats; //DPCS
     ptr_array->power_prechg_eq_drivers.readOp.dynamic = uca->bank.mat.power_bl_precharge_eq_drv.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
     ptr_array->power_output_drivers_at_subarray.readOp.dynamic = uca->bank.mat.power_subarray_out_drv.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
     ptr_array->power_comparators.readOp.dynamic = uca->bank.mat.power_comparator.readOp.dynamic * dyn_p.num_act_mats_hor_dir;
@@ -577,7 +577,7 @@ void filter_data_arr(list<mem_array *> & curr_list)
  *    above results 
  * 4. Cache model with least cost is picked from sol_list
  */
- //MWG: This is the entry point into solving optimal configuration.
+ //DPCS: This is the entry point into solving optimal configuration.
 void solve(uca_org_t *fin_res)
 {
   bool   is_dram  = false;

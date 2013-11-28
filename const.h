@@ -61,12 +61,12 @@ now: I'm using 42 bits as in the Power4,
 since that's bigger then the 36 bits on the Pentium 4 
 and 40 bits on the Opteron
 */
-const int ADDRESS_BITS = 32; //MWG
-const int EXTRA_FM_BITS = 3; //MWG: 1 faulty bit, and 2 FM bits for 3 allowed VDD levels
+const int ADDRESS_BITS = 32; //DPCS
+const int EXTRA_FM_BITS = 3; //DPCS: 1 faulty bit, and 2 FM bits for 3 allowed VDD levels
 /*dt: In addition to the tag bits, the tags also include 1 valid bit, 1 dirty bit, 2 bits for a 4-state 
   cache coherency protocoll (MESI), 1 bit for MRU (change this to log(ways) for full LRU). 
   So in total we have 1 + 1 + 2 + 1 = 5 */
-const int EXTRA_TAG_BITS = 5+EXTRA_FM_BITS; //MWG
+const int EXTRA_TAG_BITS = 5+EXTRA_FM_BITS; //DPCS
 
 /* limits on the various N parameters */
 
@@ -75,10 +75,12 @@ const unsigned int MAXSUBARRAYS = 1048576;  // maximum subarrays for data and ta
 const unsigned int MAXDATASPD   = 256;      // maximum for Nspd
 const unsigned int MAX_COL_MUX  = 256;
 
-const double LAMBDA = 0.1; //MWG: assumed CLM parameter
-const double ETA = 0.15; //MWG: assumed DIBL factor
-const double SS = 100; //MWG: assumed subthreshold slope, mV/decade
-const double I_ON_CONST = 0.02566085; //MWG: pre-calculated k'W/L factor for Rabaey on-current model
+//const double LAMBDA = 0.1; //DPCS: assumed CLM parameter
+//const double ETA = 0.15; //DPCS: assumed DIBL factor
+//const double SS = 100; //DPCS: assumed subthreshold slope, mV/decade
+//const double I_ON_CONST = 0.02566085; //DPCS: pre-calculated k'W/L factor for Rabaey on-current model
+
+#define NUM_VDD_INPUT_LEVELS 101 //DPCS
 
 #define ROUTER_TYPES 3
 #define WIRE_TYPES 6

@@ -44,9 +44,14 @@
 
 #include "const.h"
 #include "cacti_interface.h"
+#include <fstream>
 
-
-void output_data_csv(const uca_org_t & fin_res);
+void input_spice_fet_data_csv(); //DPCS
+void set_fet_technology_parameters(); //DPCS
+void update_effective_resistance(); //DPCS
+void row_of_dpcs_output_csv(uca_org_t *fin_res, ofstream *file); //DPCS
+void do_dpcs_modeling_magic(uca_org_t *fin_res); //DPCS
+void output_data_csv(const uca_org_t & fin_res); //DPCS
 void output_UCA(uca_org_t * fin_res);
 
 

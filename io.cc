@@ -52,9 +52,13 @@
 #include "nuca.h"
 #include "crossbar.h"
 #include "arbiter.h"
+#include "voltagedata.h" //DPCS
+#include "const.h" //DPCS
 
 using namespace std;
 
+
+VoltageData fet_data[NUM_VDD_INPUT_LEVELS]; //DPCS
 
 /* Parses "cache.cfg" file */
   void
@@ -603,98 +607,136 @@ powerDef operator+(const powerDef & x, const powerDef & y)
   return z;
 }
 
+void input_fet_spice_data_csv() { //DPCS
+	cout << "Reading FET SPICE data CSV..." << endl;
 
+	ifstream file;
+	file.open("configs/fet_spice_data.csv");
+	if (!file) {
+		cout << "Failed to open configs/fet_spice_data.csv!" << endl;
+		exit(1);
+	}
 
-uca_org_t cacti_interface(const string & infile_name)
-{
-	double scaled_vdd = 0; //MWG
+	string element;
+	int i = NUM_VDD_INPUT_LEVELS-1;
 
-  uca_org_t fin_res;
-//  uca_org_t result;
-  fin_res.valid = false;
+	getline(file,element); //throw out two header rows
+	getline(file,element);
+	while (!file.eof() && i >= 0) {
+		//read voltage
+		getline(file,element,',');
+		fet_data[i].vdd = atof(element.c_str());
 
-  g_ip = new InputParameter();
-  g_ip->parse_cfg(infile_name);
-  if (g_ip->error_checking() == false) exit(0);
-  if (g_ip->print_input_args) {
-	 cout << "****************** INPUT ARGUMENTS ***************" << endl; //MWG
-    g_ip->display_ip();
-	 cout << "**************************************************" << endl; //MWG
-  }
+		//read NMOS RVT ION
+		getline(file,element,',');
+		fet_data[i].nmos_rvt_Ion = atof(element.c_str());
 
-  init_tech_params(g_ip->F_sz_um, false);
-  Wire winit; // Do not delete this line. It initializes wires.
+		//read NMOS RVT IOFF
+		getline(file,element,',');
+		fet_data[i].nmos_rvt_Ioff = atof(element.c_str());
+		
+		//read NMOS LVT ION
+		getline(file,element,',');
+		fet_data[i].nmos_lvt_Ion = atof(element.c_str());
 
-  //MWG
-  FILE *fp = fopen("configs/nmos_on_current.csv", "r");
-  char line[128];
-  int voltages[101];
-  float on_current[101];
-  float off_current[101];
-  int i = 0;
-  if(!fp) {
-    cout << "Couldn't open nmos_on_current.csv!\n";
-    exit(-1);
-  }
-  while(fscanf(fp, "%[^\n]\n", line) != EOF) {
-	  sscanf(line, "%d,%f\n", &voltages[i], &on_current[i]);
-	  cout << "voltages[" << i << "] = " << voltages[i] << " on_current = " << on_current[i] << "uA \n";
-	  on_current[i] = on_current[i] * 1e-6;
-	  i++;
-  }
-  fclose(fp);
-  fp = fopen("configs/nmos_off_current.csv", "r");
-  if (!fp) {
-	  cout << "Couldn't open nmos_off_current.csv!\n";
-	  exit(-1);
-  }
-  i = 0;
-  while(fscanf(fp, "%[^\n]\n", line) != EOF) {
-	  sscanf(line, "%d,%f\n", &voltages[i], &off_current[i]);
-	  cout << "voltages[" << i << "] = " << voltages[i] << " off_current = " << off_current[i] << "nA \n";
-	  off_current[i] = off_current[i] * 1e-9;
-	  i++;
-  }
-  scaled_vdd = g_tp.sram_cell.nominal_Vdd;
-  g_tp.sram_cell.Vdd = scaled_vdd;
-  //Update sram cell technology parameters for the scaled VDD...
+		//read NMOS LVT IOFF
+		getline(file,element,',');
+		fet_data[i].nmos_lvt_Ioff = atof(element.c_str());
+		
+		//read PMOS RVT ION
+		getline(file,element,',');
+		fet_data[i].pmos_rvt_Ion = atof(element.c_str());
 
-	//MWG: On current: Rabaey model, assumed velocity saturated. See constants defined in const.h
- // g_tp.sram_cell.I_on_n =  I_ON_CONST * ((g_tp.sram_cell.Vdd - g_tp.sram_cell.Vth)*g_tp.sram_cell.nominal_Vdsat - (g_tp.sram_cell.nominal_Vdsat) * (g_tp.sram_cell.nominal_Vdsat)/2) * (1+LAMBDA * g_tp.sram_cell.Vdd);
-  g_tp.sram_cell.I_on_n = on_current[i];
-  g_tp.sram_cell.I_on_p = g_tp.sram_cell.I_on_n / 2;
+		//read PMOS RVT IOFF
+		getline(file,element,',');
+		fet_data[i].pmos_rvt_Ioff = atof(element.c_str());
+		
+		//read PMOS LVT ION
+		getline(file,element,',');
+		fet_data[i].pmos_lvt_Ion = atof(element.c_str());
 
-  
-  //Resistance: CACTI model
-  g_tp.sram_cell.R_nch_on = 1.51 * g_tp.sram_cell.Vdd / g_tp.sram_cell.I_on_n; //leading constant taken from technology.cc
-  g_tp.sram_cell.R_pch_on = 2.41 * g_tp.sram_cell.R_nch_on; //leading constant taken from technology.cc
-  
-  //Off (leakage) current: Weste model
-  //g_tp.sram_cell.I_off_n = g_tp.sram_cell.nominal_I_off_n * pow(10,(-ETA*(g_tp.sram_cell.nominal_Vdd - g_tp.sram_cell.Vdd)*1000)/SS);
-  g_tp.sram_cell.I_off_n = off_current[i];
-  g_tp.sram_cell.I_off_p = g_tp.sram_cell.I_off_n;
+		//read PMOS LVT IOFF
+		getline(file,element); //end of line
+		fet_data[i].pmos_lvt_Ioff = atof(element.c_str());
 
+		i--;
+	}
+	cout << "Finished reading FET SPICE data CSV." << endl;
+}
 
-  
-  cout << endl << "**************** TECHNOLOGY PARAMETERS *****************" << endl; //MWG
-  g_tp.display(0); //MWG
-  cout << "********************************************************" << endl; //MWG
+//DPCS: Set effective resistance, computed with standard CACTI model from technology.cc. Note that P channel resistance is not computed using the actual PFET data, to stay consistent with CACTI treating PFET as just for kicks.
+void update_effective_resistance() { //DPCS
+	g_tp.sram_cell.R_nch_on = 1.51 * g_tp.sram_cell.Vdd / g_tp.sram_cell.I_on_n; //leading constant taken from technology.cc
+	g_tp.sram_cell.R_pch_on = 2.41 * g_tp.sram_cell.R_nch_on; //leading constant taken from technology.cc
 
-  if (g_ip->nuca == 1)
-  {
-    Nuca n(&g_tp.peri_global);
-    n.sim_nuca();
-  }
-//  g_ip->display_ip();
-  solve(&fin_res);
-  output_data_csv(fin_res); //MWG
+	g_tp.peri_global.R_nch_on = 1.51 * g_tp.peri_global.Vdd / g_tp.peri_global.I_on_n; //leading constant taken from technology.cc
+	g_tp.peri_global.R_pch_on = 2.41 * g_tp.peri_global.R_nch_on; //leading constant taken from technology.cc
+}
 
-	//MWG file
-  fstream file("dpcs_cacti.csv", ios::out);
-  if (file.fail() == true)
-  {
-    cerr << "File dpcs_cacti.csv could not be opened successfully" << endl;
-  }
+//DPCS: Update nominal and initial technology parameters (VDD, Ion, Ioff) using what we got from the SPICE data. Do this for SRAM and periphery cells.
+void set_fet_technology_parameters() { //DPCS
+  //DPCS: Set nominal VDD values. Both SRAM and periphery use same nominal VDD
+  g_tp.sram_cell.nominal_Vdd = fet_data[NUM_VDD_INPUT_LEVELS-1].vdd; //DPCS
+  g_tp.peri_global.nominal_Vdd = fet_data[NUM_VDD_INPUT_LEVELS-1].vdd; //DPCS
+
+  //DPCS: Set current values. SRAM uses RVT nfet/pfet, while periphery uses LVT nfet/pfet. As far as I know, PMOS is only for kicks in CACTI, it isn't actually used anywhere. Let's set it to technology data anyway though.
+  g_tp.sram_cell.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_rvt_Ion; 
+  g_tp.sram_cell.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_rvt_Ioff; 
+  g_tp.sram_cell.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_rvt_Ion; 
+  g_tp.sram_cell.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_rvt_Ioff; 
+  g_tp.peri_global.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_lvt_Ion; 
+  g_tp.peri_global.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_lvt_Ioff; 
+  g_tp.peri_global.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_lvt_Ion; 
+  g_tp.peri_global.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_lvt_Ioff; 
+
+  //DPCS: Okay, let's initialize the present values to nominal values.
+  g_tp.sram_cell.Vdd = g_tp.sram_cell.nominal_Vdd;
+  g_tp.peri_global.Vdd = g_tp.peri_global.nominal_Vdd;
+
+  g_tp.sram_cell.I_on_n = g_tp.sram_cell.nominal_I_on_n;
+  g_tp.sram_cell.I_off_n = g_tp.sram_cell.nominal_I_off_n;
+  g_tp.sram_cell.I_on_p = g_tp.sram_cell.nominal_I_on_p;
+  g_tp.sram_cell.I_off_p = g_tp.sram_cell.nominal_I_off_p;
+  g_tp.peri_global.I_on_n = g_tp.peri_global.nominal_I_on_n;
+  g_tp.peri_global.I_off_n = g_tp.peri_global.nominal_I_off_n;
+  g_tp.peri_global.I_on_p = g_tp.peri_global.nominal_I_on_p;
+  g_tp.peri_global.I_off_p = g_tp.peri_global.nominal_I_off_p;
+}
+
+void row_of_dpcs_output_csv(uca_org_t *fin_res, ofstream *file) { //DPCS
+	//Output the current statistics at this voltage to the file
+	(*file) << g_tp.sram_cell.Vdd << ", ";
+	(*file) << g_tp.sram_cell.I_on_n << ", ";
+	(*file) << g_tp.sram_cell.I_off_n << ", ";
+	(*file) << g_tp.sram_cell.I_on_p << ", ";
+	(*file) << g_tp.sram_cell.I_off_p << ", ";
+	(*file) << g_tp.sram_cell.R_nch_on << ", ";
+	(*file) << g_tp.sram_cell.R_pch_on << ", ";
+	(*file) << fin_res->access_time*1e9 << ", ";
+	(*file) << fin_res->cycle_time*1e9 << ", ";
+	(*file) << fin_res->power.readOp.dynamic*1e9 << ", ";
+	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage * 1e3 << ", ";
+	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage/g_tp.sram_cell.Vdd/(g_ip->cache_sz*8)*g_ip->nbanks << ", ";
+	(*file) << fin_res->data_array2->power.readOp.leakage * 1e3 << ", ";
+	(*file) << fin_res->tag_array2->power.readOp.leakage * 1e3 << ", ";
+	(*file) << fin_res->power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
+	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage / fin_res->data_array2->power.readOp.leakage << ", ";
+	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage / fin_res->power.readOp.leakage << ", ";
+	(*file) << fin_res->tag_array2->power_bitlines.readOp.leakage / fin_res->tag_array2->power.readOp.leakage << ", ";
+	(*file) << fin_res->tag_array2->power_bitlines.readOp.leakage / fin_res->power.readOp.leakage << endl;
+}
+
+void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
+	//DPCS: CSV file output
+	ofstream file;
+	file.open("dpcs_cacti_results.csv");
+	if (file.fail())
+	{
+		cerr << "File dpcs_cacti_results.csv could not be opened successfully! Quitting." << endl;
+		exit(1);
+	}
+
+	//DPCS: Print the CSV column header
 	file << "Data array voltage (V), ";
 	file << "SRAM cell nfet on current (A), ";
 	file << "SRAM cell nfet off current (A), ";
@@ -715,100 +757,105 @@ uca_org_t cacti_interface(const string & infile_name)
 	file << "Tag cells / tag array power, ";
 	file << "Tag cells / total power" << endl;
 
-  scaled_vdd = g_tp.sram_cell.nominal_Vdd;
-  cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //MWG
-  cout << endl << "********* VOLTAGE-SCALED SRAM CELL PARAMETERS **********" << endl; //MWG
-  display_sram_cell_params(); //MWG
-  cout << "********************************************************" << endl; //MWG
+	//DPCS: Let's begin the VDD scaling goodness. Print out the initial conditions.
+	double scaled_vdd = fet_data[NUM_VDD_INPUT_LEVELS-1].vdd;
+	cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //DPCS
+	cout << endl << "********* VOLTAGE-SCALED SRAM CELL PARAMETERS **********" << endl; //DPCS
+	display_sram_cell_params(); //DPCS
+	cout << "********************************************************" << endl; //DPCS
 
+	cout << endl << "******************** CACHE DATA ************************" << endl; //DPCS
+	output_UCA(fin_res);
+	cout << "********************************************************" << endl; //DPCS
 
-  cout << endl << "******************** CACHE DATA ************************" << endl; //MWG
-  output_UCA(&fin_res);
-  cout << "********************************************************" << endl; //MWG
+	//DPCS: We already did a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config. 
 
-  /*MWG: Now we have done a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config. */
-  i = 100;
-  for (scaled_vdd = 1.000; scaled_vdd >= 0.199; scaled_vdd-=0.010) { //MWG: loop through all data array scaled values
-		//Now output relevant statistics to a file for post-processing
-		file << g_tp.sram_cell.Vdd << ", ";
-		file << g_tp.sram_cell.I_on_n << ", ";
-		file << g_tp.sram_cell.I_off_n << ", ";
-		file << g_tp.sram_cell.I_on_p << ", ";
-		file << g_tp.sram_cell.I_off_p << ", ";
-		file << g_tp.sram_cell.R_nch_on << ", ";
-		file << g_tp.sram_cell.R_pch_on << ", ";
-		file << fin_res.access_time*1e9 << ", ";
-		file << fin_res.cycle_time*1e9 << ", ";
-		file << fin_res.power.readOp.dynamic*1e9 << ", ";
-		file << fin_res.data_array2->power_bitlines.readOp.leakage * 1e3 << ", ";
-		file << fin_res.data_array2->power_bitlines.readOp.leakage/g_tp.sram_cell.Vdd/(g_ip->cache_sz*8)*g_ip->nbanks << ", ";
-		file << fin_res.data_array2->power.readOp.leakage * 1e3 << ", ";
-		file << fin_res.tag_array2->power.readOp.leakage * 1e3 << ", ";
-		file << fin_res.power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
-		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.data_array2->power.readOp.leakage << ", ";
-		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.power.readOp.leakage << ", ";
-		file << fin_res.tag_array2->power_bitlines.readOp.leakage / fin_res.tag_array2->power.readOp.leakage << ", ";
-		file << fin_res.tag_array2->power_bitlines.readOp.leakage / fin_res.power.readOp.leakage << endl;
+	for (int i = NUM_VDD_INPUT_LEVELS-1; i >= 0; i--) { //DPCS: loop over all voltages in 10 mV increments
+		row_of_dpcs_output_csv(fin_res, &file);
 
-	  g_tp.sram_cell.Vdd = scaled_vdd;
-	  //Update sram cell technology parameters for the scaled VDD...
+		//DPCS: Scale VDD, and update technology parameters for SRAM cells
+		scaled_vdd = fet_data[i].vdd;
+		g_tp.sram_cell.Vdd = scaled_vdd;
+		g_tp.sram_cell.I_on_n = fet_data[i].nmos_rvt_Ion;
+		g_tp.sram_cell.I_off_n = fet_data[i].nmos_rvt_Ioff; 
+		g_tp.sram_cell.I_on_p = fet_data[i].pmos_rvt_Ion;
+		g_tp.sram_cell.I_off_p = fet_data[i].pmos_rvt_Ioff; 
+		update_effective_resistance();
 
-		//MWG: On current: Rabaey model, assumed velocity saturated. See constants defined in const.h
-	 // g_tp.sram_cell.I_on_n =  I_ON_CONST * ((g_tp.sram_cell.Vdd - g_tp.sram_cell.Vth)*g_tp.sram_cell.nominal_Vdsat - (g_tp.sram_cell.nominal_Vdsat) * (g_tp.sram_cell.nominal_Vdsat)/2) * (1+LAMBDA * g_tp.sram_cell.Vdd);
-	  g_tp.sram_cell.I_on_n = on_current[i];
-	  g_tp.sram_cell.I_on_p = g_tp.sram_cell.I_on_n / 2;
+		//DPCS: Recompute delay, power, etc. but do NOT change any configurations! We have already found optimal cache config under nominal conditions. The cache can't magically reoptimize itself =)
+		calculate_time(false, 0, fin_res->data_array2->Nspd, fin_res->data_array2->Ndwl, fin_res->data_array2->Ndbl, fin_res->data_array2->deg_bl_muxing, fin_res->data_array2->Ndsam_lev_1, fin_res->data_array2->Ndsam_lev_2, fin_res->data_array2, 0, NULL, NULL, 0);
 
-	  
-	  //Resistance: CACTI model
-	  g_tp.sram_cell.R_nch_on = 1.51 * g_tp.sram_cell.Vdd / g_tp.sram_cell.I_on_n; //leading constant taken from technology.cc
-	  g_tp.sram_cell.R_pch_on = 2.41 * g_tp.sram_cell.R_nch_on; //leading constant taken from technology.cc
-	  
-	  //Off (leakage) current: Weste model
-	  //g_tp.sram_cell.I_off_n = g_tp.sram_cell.nominal_I_off_n * pow(10,(-ETA*(g_tp.sram_cell.nominal_Vdd - g_tp.sram_cell.Vdd)*1000)/SS);
-	  g_tp.sram_cell.I_off_n = off_current[i];
-	  g_tp.sram_cell.I_off_p = g_tp.sram_cell.I_off_n;
+		fin_res->find_delay();
+		fin_res->find_energy();
+		fin_res->find_area();
+		fin_res->find_cyc();
 
-	  //Recompute everything but do not change any configurations. We have already found optimal cache config under nominal conditions
-	  calculate_time(false, 0, fin_res.data_array2->Nspd, fin_res.data_array2->Ndwl, fin_res.data_array2->Ndbl, fin_res.data_array2->deg_bl_muxing, fin_res.data_array2->Ndsam_lev_1, fin_res.data_array2->Ndsam_lev_2, fin_res.data_array2, 0, NULL, NULL, 0);
-	  fin_res.find_delay();
-	  fin_res.find_energy();
-	  fin_res.find_area();
-	  fin_res.find_cyc();
+		//DPCS: Console reporting
+		cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //DPCS
+		cout << endl << "********* VOLTAGE-SCALED SRAM CELL PARAMETERS **********" << endl; //DPCS
+		display_sram_cell_params(); //DPCS
+		cout << "********************************************************" << endl; //DPCS
 
-	  cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //MWG
-	  cout << endl << "********* VOLTAGE-SCALED SRAM CELL PARAMETERS **********" << endl; //MWG
-	  display_sram_cell_params(); //MWG
-	  cout << "********************************************************" << endl; //MWG
-	  cout << endl << "******************** CACHE DATA ************************" << endl; //MWG
-	  output_UCA(&fin_res);
-	  cout << "********************************************************" << endl; //MWG
-	  i--;
-  }
+		cout << endl << "******************** CACHE DATA ************************" << endl; //DPCS
+		output_UCA(fin_res);
+		cout << "********************************************************" << endl; //DPCS
+	}
+	
+	//Output last row of the DPCS output CSV
+	row_of_dpcs_output_csv(fin_res, &file);
 
-		file << g_tp.sram_cell.Vdd << ", ";
-		file << g_tp.sram_cell.I_on_n << ", ";
-		file << g_tp.sram_cell.I_off_n << ", ";
-		file << g_tp.sram_cell.I_on_p << ", ";
-		file << g_tp.sram_cell.I_off_p << ", ";
-		file << g_tp.sram_cell.R_nch_on << ", ";
-		file << g_tp.sram_cell.R_pch_on << ", ";
-		file << fin_res.access_time*1e9 << ", ";
-		file << fin_res.cycle_time*1e9 << ", ";
-		file << fin_res.power.readOp.dynamic*1e9 << ", ";
-		file << fin_res.data_array2->power_bitlines.readOp.leakage * 1e3 << ", ";
-		file << fin_res.data_array2->power_bitlines.readOp.leakage/g_tp.sram_cell.Vdd/(g_ip->cache_sz*8)*g_ip->nbanks << ", ";
-		file << fin_res.data_array2->power.readOp.leakage * 1e3 << ", ";
-		file << fin_res.tag_array2->power.readOp.leakage * 1e3 << ", ";
-		file << fin_res.power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
-		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.data_array2->power.readOp.leakage << ", ";
-		file << fin_res.data_array2->power_bitlines.readOp.leakage / fin_res.power.readOp.leakage << ", ";
-		file << fin_res.tag_array2->power_bitlines.readOp.leakage / fin_res.tag_array2->power.readOp.leakage << ", ";
-		file << fin_res.tag_array2->power_bitlines.readOp.leakage / fin_res.power.readOp.leakage << endl;
+	file.close();
+}
 
-  file.close();
+//DPCS: FYI, This is basically the main flow of CACTI.
+uca_org_t cacti_interface(const string & infile_name)
+{
+	double scaled_vdd = 0; //DPCS
 
-  delete (g_ip);
-  return fin_res;
+	uca_org_t fin_res;
+	//  uca_org_t result;
+	fin_res.valid = false;
+
+	//DPCS: Read standard CACTI input arguments
+	g_ip = new InputParameter();
+	g_ip->parse_cfg(infile_name);
+	if (g_ip->error_checking() == false)
+		exit(0);
+	if (g_ip->print_input_args) {
+		cout << "****************** INPUT ARGUMENTS ***************" << endl; //DPCS
+		g_ip->display_ip();
+		cout << "**************************************************" << endl; //DPCS
+	}
+	
+	//DPCS: Initialize standard CACTI tech params
+	init_tech_params(g_ip->F_sz_um, false);
+	Wire winit; // Do not delete this line. It initializes wires.
+
+	//DPCS: Set our custom technology parameters, read from a file.
+	set_fet_technology_parameters(); //DPCS
+	update_effective_resistance(); //DPCS
+
+	//DPCS: Okay, let's show off the resulting tech parameters that we will use.
+	cout << endl << "**************** TECHNOLOGY PARAMETERS *****************" << endl; //DPCS
+	g_tp.display(0); //DPCS
+	cout << "********************************************************" << endl; //DPCS
+
+	//DPCS: This shouldn't get called, we haven't played with NUCA yet
+	if (g_ip->nuca == 1)
+	{
+		Nuca n(&g_tp.peri_global);
+		n.sim_nuca();
+	}
+
+//  g_ip->display_ip();
+
+	solve(&fin_res); //DPCS: This is the good stuff in CACTI. Actually do the cache modeling and come up with the magic results
+	output_data_csv(fin_res); //DPCS: Print out the initial CACTI results from the solver. We don't really need this for DPCS though, just let it be.
+	
+	do_dpcs_modeling_magic(&fin_res);
+
+	delete (g_ip);
+	return fin_res;
 }
 
 uca_org_t cacti_interface(
@@ -1185,7 +1232,7 @@ bool InputParameter::error_checking()
 void output_data_csv(const uca_org_t & fin_res)
 {
 
-  fstream file("out.csv", ios::out); //MWG
+  fstream file("out.csv", ios::out); //DPCS
   if (file.fail() == true)
   {
     cerr << "File out.csv could not be opened successfully" << endl;

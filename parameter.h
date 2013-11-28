@@ -63,21 +63,21 @@ class TechnologyParameter
     double l_phy;
     double l_elec;
     double R_nch_on; 
-	 double nominal_R_nch_on; //MWG: Set to the default. For sram_cell type only.
+	 double nominal_R_nch_on; //DPCS: Set to the default. For sram_cell type only.
     double R_pch_on; 
-	 double nominal_R_pch_on; //MWG: Set to the default. For sram_cell type only.
+	 double nominal_R_pch_on; //DPCS: Set to the default. For sram_cell type only.
     double Vdd; 
-	 double nominal_Vdd; //MWG: Set to the default For sram_cell type only.
+	 double nominal_Vdd; //DPCS: Set to the default For sram_cell type only.
     double Vth;
-	 double nominal_Vdsat; //MWG
+	 double nominal_Vdsat; //DPCS
     double I_on_n; 
-	 double nominal_I_on_n; //MWG: Set to the default. For sram_cell type only.
+	 double nominal_I_on_n; //DPCS: Set to the default. For sram_cell type only.
     double I_on_p; 
-	 double nominal_I_on_p; //MWG: Set to the default. For sram_cell type only.
+	 double nominal_I_on_p; //DPCS: Set to the default. For sram_cell type only.
     double I_off_n; 
-	 double nominal_I_off_n; //MWG: Set to the default. For sram_cell type only.
+	 double nominal_I_off_n; //DPCS: Set to the default. For sram_cell type only.
     double I_off_p; 
-	 double nominal_I_off_p; //MWG: Set to the default. For sram_cell type only.
+	 double nominal_I_off_p; //DPCS: Set to the default. For sram_cell type only.
     double C_ox;
     double t_ox;
     double n_to_p_eff_curr_drv_ratio;
@@ -85,21 +85,21 @@ class TechnologyParameter
     DeviceType(): C_g_ideal(0), C_fringe(0), C_overlap(0), C_junc(0),
                   C_junc_sidewall(0), l_phy(0), l_elec(0),
 						R_nch_on(0),
-						nominal_R_nch_on(0), //MWG
+						nominal_R_nch_on(0), //DPCS
 						R_pch_on(0),
-						nominal_R_pch_on(0), //MWG
+						nominal_R_pch_on(0), //DPCS
                   Vdd(0),
-						nominal_Vdd(0), //MWG
+						nominal_Vdd(0), //DPCS
 						Vth(0),
-						nominal_Vdsat(0), //MWG
+						nominal_Vdsat(0), //DPCS
                   I_on_n(0),
-						nominal_I_on_n(0), //MWG
+						nominal_I_on_n(0), //DPCS
 						I_on_p(0),
-						nominal_I_on_p(0), //MWG
+						nominal_I_on_p(0), //DPCS
 						I_off_n(0),
-						nominal_I_off_n(0), //MWG
+						nominal_I_off_n(0), //DPCS
 						I_off_p(0),
-						nominal_I_off_p(0), //MWG
+						nominal_I_off_p(0), //DPCS
                   C_ox(0), t_ox(0), n_to_p_eff_curr_drv_ratio(0) { };
     void reset()
     {
@@ -110,21 +110,21 @@ class TechnologyParameter
       l_phy     = 0;
       l_elec    = 0;
       R_nch_on  = 0;
-		nominal_R_nch_on = 0; //MWG
+		nominal_R_nch_on = 0; //DPCS
       R_pch_on  = 0;
-		nominal_R_pch_on = 0; //MWG
+		nominal_R_pch_on = 0; //DPCS
       Vdd       = 0;
-		nominal_Vdd = 0; //MWG
+		nominal_Vdd = 0; //DPCS
       Vth       = 0;
-		nominal_Vdsat = 0; //MWG
+		nominal_Vdsat = 0; //DPCS
       I_on_n    = 0;
-		nominal_I_on_n = 0; //MWG
+		nominal_I_on_n = 0; //DPCS
       I_on_p    = 0;
-		nominal_I_on_p = 0; //MWG
+		nominal_I_on_p = 0; //DPCS
       I_off_n   = 0;
-		nominal_I_off_n = 0; //MWG
+		nominal_I_off_n = 0; //DPCS
       I_off_p   = 0;
-		nominal_I_off_p = 0; //MWG
+		nominal_I_off_p = 0; //DPCS
       C_ox      = 0;
       t_ox      = 0;
       n_to_p_eff_curr_drv_ratio = 0;
@@ -319,7 +319,7 @@ class DynamicParameter
     bool   is_valid;
 };
 
-void display_sram_cell_params(); //MWG
+void display_sram_cell_params(); //DPCS
 
 extern InputParameter * g_ip;
 extern TechnologyParameter g_tp;

@@ -102,7 +102,7 @@ UCA::~UCA()
 }
 
 
-//MWG: This computes the high-level delay components for a given UCA configuration
+//DPCS: This computes the high-level delay components for a given UCA configuration
 double UCA::compute_delays(double inrisetime)
 {
   double outrisetime = bank.compute_delays(inrisetime);
@@ -203,7 +203,7 @@ double UCA::compute_delays(double inrisetime)
 }
 
 
-//MWG: computes high-level power for a given UCA configuration
+//DPCS: computes high-level power for a given UCA configuration
 // note: currently, power numbers are for a bank of an array
 void UCA::compute_power_energy()
 {

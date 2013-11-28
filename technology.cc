@@ -1111,7 +1111,7 @@ void init_tech_params(double technology, bool is_tag)
 
 
       g_tp.peri_global.Vdd       += curr_alpha * vdd[peri_global_tech_type];
-      g_tp.peri_global.nominal_Vdd       += curr_alpha * vdd[peri_global_tech_type]; //MWG
+      g_tp.peri_global.nominal_Vdd       += curr_alpha * vdd[peri_global_tech_type]; //DPCS
       g_tp.peri_global.t_ox      += curr_alpha * t_ox[peri_global_tech_type];
       g_tp.peri_global.Vth       += curr_alpha * v_th[peri_global_tech_type];
       g_tp.peri_global.nominal_Vdsat       += curr_alpha * Vdsat[peri_global_tech_type];
@@ -1123,19 +1123,19 @@ void init_tech_params(double technology, bool is_tag)
       g_tp.peri_global.l_phy     += curr_alpha * Lphy[peri_global_tech_type];
       g_tp.peri_global.l_elec    += curr_alpha * Lelec[peri_global_tech_type];
       g_tp.peri_global.I_on_n    += curr_alpha * I_on_n[peri_global_tech_type];
-      g_tp.peri_global.nominal_I_on_n    += curr_alpha * I_on_n[peri_global_tech_type]; //MWG
+      g_tp.peri_global.nominal_I_on_n    += curr_alpha * I_on_n[peri_global_tech_type]; //DPCS
       g_tp.peri_global.R_nch_on  += curr_alpha * Rnchannelon[peri_global_tech_type];
-      g_tp.peri_global.nominal_R_nch_on  += curr_alpha * Rnchannelon[peri_global_tech_type]; //MWG
+      g_tp.peri_global.nominal_R_nch_on  += curr_alpha * Rnchannelon[peri_global_tech_type]; //DPCS
       g_tp.peri_global.R_pch_on  += curr_alpha * Rpchannelon[peri_global_tech_type];
-      g_tp.peri_global.nominal_R_pch_on  += curr_alpha * Rpchannelon[peri_global_tech_type]; //MWG
+      g_tp.peri_global.nominal_R_pch_on  += curr_alpha * Rpchannelon[peri_global_tech_type]; //DPCS
       g_tp.peri_global.n_to_p_eff_curr_drv_ratio 
         += curr_alpha * n_to_p_eff_curr_drv_ratio[peri_global_tech_type];
       g_tp.peri_global.I_off_n   += curr_alpha * I_off_n[peri_global_tech_type][g_ip->temp - 300];
-      g_tp.peri_global.nominal_I_off_n   += curr_alpha * I_off_n[peri_global_tech_type][g_ip->temp - 300]; //MWG
+      g_tp.peri_global.nominal_I_off_n   += curr_alpha * I_off_n[peri_global_tech_type][g_ip->temp - 300]; //DPCS
       gmp_to_gmn_multiplier_periph_global += curr_alpha * gmp_to_gmn_multiplier[peri_global_tech_type];
 
       g_tp.sram_cell.Vdd       += curr_alpha * vdd[ram_cell_tech_type];
-      g_tp.sram_cell.nominal_Vdd       += curr_alpha * vdd[ram_cell_tech_type]; //MWG
+      g_tp.sram_cell.nominal_Vdd       += curr_alpha * vdd[ram_cell_tech_type]; //DPCS
       g_tp.sram_cell.l_phy     += curr_alpha * Lphy[ram_cell_tech_type];
       g_tp.sram_cell.l_elec    += curr_alpha * Lelec[ram_cell_tech_type];
       g_tp.sram_cell.t_ox      += curr_alpha * t_ox[ram_cell_tech_type];
@@ -1146,16 +1146,16 @@ void init_tech_params(double technology, bool is_tag)
       g_tp.sram_cell.C_junc    += curr_alpha * c_junc[ram_cell_tech_type];
       g_tp.sram_cell.C_junc_sidewall = 0.25e-15;  // F/micron
       g_tp.sram_cell.I_on_n    += curr_alpha * I_on_n[ram_cell_tech_type];
-      g_tp.sram_cell.nominal_I_on_n    += curr_alpha * I_on_n[ram_cell_tech_type]; //MWG
+      g_tp.sram_cell.nominal_I_on_n    += curr_alpha * I_on_n[ram_cell_tech_type]; //DPCS
       g_tp.sram_cell.R_nch_on  += curr_alpha * Rnchannelon[ram_cell_tech_type];
-      g_tp.sram_cell.nominal_R_nch_on  += curr_alpha * Rnchannelon[ram_cell_tech_type]; //MWG
+      g_tp.sram_cell.nominal_R_nch_on  += curr_alpha * Rnchannelon[ram_cell_tech_type]; //DPCS
       g_tp.sram_cell.R_pch_on  += curr_alpha * Rpchannelon[ram_cell_tech_type];
-      g_tp.sram_cell.nominal_R_pch_on  += curr_alpha * Rpchannelon[ram_cell_tech_type]; //MWG
+      g_tp.sram_cell.nominal_R_pch_on  += curr_alpha * Rpchannelon[ram_cell_tech_type]; //DPCS
       g_tp.sram_cell.n_to_p_eff_curr_drv_ratio += curr_alpha * n_to_p_eff_curr_drv_ratio[ram_cell_tech_type];
       g_tp.sram_cell.I_off_n   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300];
-      g_tp.sram_cell.nominal_I_off_n   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300]; //MWG
-      g_tp.sram_cell.I_off_p   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300]; //MWG
-      g_tp.sram_cell.nominal_I_off_p   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300]; //MWG
+      g_tp.sram_cell.nominal_I_off_n   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300]; //DPCS
+      g_tp.sram_cell.I_off_p   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300]; //DPCS
+      g_tp.sram_cell.nominal_I_off_p   += curr_alpha * I_off_n[ram_cell_tech_type][g_ip->temp - 300]; //DPCS
       
 		g_tp.dram_cell_Vdd      += curr_alpha * curr_vdd_dram_cell;
       g_tp.dram_acc.Vth       += curr_alpha * curr_v_th_dram_access_transistor;
@@ -1169,7 +1169,7 @@ void init_tech_params(double technology, bool is_tag)
       g_tp.dram_cell_I_on     += curr_alpha * curr_I_on_dram_cell;
       g_tp.dram_cell_I_off_worst_case_len_temp += curr_alpha * curr_I_off_dram_cell_worst_case_length_temp;
       g_tp.dram_acc.I_on_n    += curr_alpha * I_on_n[dram_cell_tech_flavor];
-      g_tp.dram_acc.nominal_I_on_n    += curr_alpha * I_on_n[dram_cell_tech_flavor]; //MWG
+      g_tp.dram_acc.nominal_I_on_n    += curr_alpha * I_on_n[dram_cell_tech_flavor]; //DPCS
       g_tp.dram_cell_C        += curr_alpha * curr_c_dram_cell;
       g_tp.vpp                += curr_alpha * curr_vpp;
       g_tp.dram_wl.l_phy      += curr_alpha * Lphy[dram_cell_tech_flavor];
@@ -1179,16 +1179,16 @@ void init_tech_params(double technology, bool is_tag)
       g_tp.dram_wl.C_junc     += curr_alpha * c_junc[dram_cell_tech_flavor];
       g_tp.dram_wl.C_junc_sidewall = 0.25e-15;  // F/micron
       g_tp.dram_wl.I_on_n     += curr_alpha * I_on_n[dram_cell_tech_flavor];
-      g_tp.dram_wl.nominal_I_on_n     += curr_alpha * I_on_n[dram_cell_tech_flavor]; //MWG
+      g_tp.dram_wl.nominal_I_on_n     += curr_alpha * I_on_n[dram_cell_tech_flavor]; //DPCS
       g_tp.dram_wl.R_nch_on   += curr_alpha * Rnchannelon[dram_cell_tech_flavor];
-      g_tp.dram_wl.nominal_R_nch_on   += curr_alpha * Rnchannelon[dram_cell_tech_flavor]; //MWG
+      g_tp.dram_wl.nominal_R_nch_on   += curr_alpha * Rnchannelon[dram_cell_tech_flavor]; //DPCS
       g_tp.dram_wl.R_pch_on   += curr_alpha * Rpchannelon[dram_cell_tech_flavor];
-      g_tp.dram_wl.nominal_R_pch_on   += curr_alpha * Rpchannelon[dram_cell_tech_flavor]; //MWG
+      g_tp.dram_wl.nominal_R_pch_on   += curr_alpha * Rpchannelon[dram_cell_tech_flavor]; //DPCS
       g_tp.dram_wl.n_to_p_eff_curr_drv_ratio += curr_alpha * n_to_p_eff_curr_drv_ratio[dram_cell_tech_flavor];
       g_tp.dram_wl.I_off_n    += curr_alpha * I_off_n[dram_cell_tech_flavor][g_ip->temp - 300];
-      g_tp.dram_wl.nominal_I_off_n    += curr_alpha * I_off_n[dram_cell_tech_flavor][g_ip->temp - 300]; //MWG
+      g_tp.dram_wl.nominal_I_off_n    += curr_alpha * I_off_n[dram_cell_tech_flavor][g_ip->temp - 300]; //DPCS
       g_tp.dram_wl.I_off_p    += curr_alpha * I_off_n[dram_cell_tech_flavor][g_ip->temp - 300];
-      g_tp.dram_wl.nominal_I_off_p    += curr_alpha * I_off_n[dram_cell_tech_flavor][g_ip->temp - 300]; //MWG
+      g_tp.dram_wl.nominal_I_off_p    += curr_alpha * I_off_n[dram_cell_tech_flavor][g_ip->temp - 300]; //DPCS
 
       g_tp.dram.cell_a_w    += curr_alpha * curr_Wmemcella_dram;
       g_tp.dram.cell_pmos_w += curr_alpha * curr_Wmemcellpmos_dram;
