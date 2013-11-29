@@ -627,6 +627,14 @@ void input_fet_spice_data_csv() { //DPCS
 		//read voltage
 		getline(file,element,',');
 		fet_data[i].vdd = atof(element.c_str());
+		
+		//read NMOS HVT ION
+		getline(file,element,',');
+		fet_data[i].nmos_hvt_Ion = atof(element.c_str()) * current_multiplier;
+
+		//read NMOS HVT IOFF
+		getline(file,element,',');
+		fet_data[i].nmos_hvt_Ioff = atof(element.c_str()) * current_multiplier;
 
 		//read NMOS RVT ION
 		getline(file,element,',');
@@ -643,6 +651,16 @@ void input_fet_spice_data_csv() { //DPCS
 		//read NMOS LVT IOFF
 		getline(file,element,',');
 		fet_data[i].nmos_lvt_Ioff = atof(element.c_str()) * current_multiplier;
+
+
+
+		//read PMOS HVT ION
+		getline(file,element,',');
+		fet_data[i].pmos_hvt_Ion = atof(element.c_str()) * current_multiplier;
+
+		//read PMOS HVT IOFF
+		getline(file,element,',');
+		fet_data[i].pmos_hvt_Ioff = atof(element.c_str()) * current_multiplier;
 		
 		//read PMOS RVT ION
 		getline(file,element,',');
@@ -680,14 +698,14 @@ void set_fet_technology_parameters() { //DPCS
   g_tp.peri_global.nominal_Vdd = fet_data[NUM_VDD_INPUT_LEVELS-1].vdd; //DPCS
 
   //DPCS: Set current values. SRAM uses RVT nfet/pfet, while periphery uses LVT nfet/pfet. As far as I know, PMOS is only for kicks in CACTI, it isn't actually used anywhere. Let's set it to technology data anyway though.
-  g_tp.sram_cell.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_rvt_Ion; 
-  g_tp.sram_cell.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_rvt_Ioff; 
-  g_tp.sram_cell.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_rvt_Ion; 
-  g_tp.sram_cell.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_rvt_Ioff; 
-  g_tp.peri_global.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_lvt_Ion; 
-  g_tp.peri_global.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_lvt_Ioff; 
-  g_tp.peri_global.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_lvt_Ion; 
-  g_tp.peri_global.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_lvt_Ioff; 
+  g_tp.sram_cell.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_hvt_Ion; 
+  g_tp.sram_cell.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_hvt_Ioff; 
+  g_tp.sram_cell.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_hvt_Ion; 
+  g_tp.sram_cell.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_hvt_Ioff; 
+  g_tp.peri_global.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_rvt_Ion; 
+  g_tp.peri_global.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_rvt_Ioff; 
+  g_tp.peri_global.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_rvt_Ion; 
+  g_tp.peri_global.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_rvt_Ioff; 
 
   //DPCS: Okay, let's initialize the present values to nominal values.
   g_tp.sram_cell.Vdd = g_tp.sram_cell.nominal_Vdd;
@@ -778,10 +796,10 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 		//DPCS: Scale VDD, and update technology parameters for SRAM cells
 		scaled_vdd = fet_data[i].vdd;
 		g_tp.sram_cell.Vdd = scaled_vdd;
-		g_tp.sram_cell.I_on_n = fet_data[i].nmos_rvt_Ion;
-		g_tp.sram_cell.I_off_n = fet_data[i].nmos_rvt_Ioff; 
-		g_tp.sram_cell.I_on_p = fet_data[i].pmos_rvt_Ion;
-		g_tp.sram_cell.I_off_p = fet_data[i].pmos_rvt_Ioff; 
+		g_tp.sram_cell.I_on_n = fet_data[i].nmos_hvt_Ion;
+		g_tp.sram_cell.I_off_n = fet_data[i].nmos_hvt_Ioff; 
+		g_tp.sram_cell.I_on_p = fet_data[i].pmos_hvt_Ion;
+		g_tp.sram_cell.I_off_p = fet_data[i].pmos_hvt_Ioff; 
 		update_effective_resistance();
 
 		//DPCS: Recompute delay, power, etc. but do NOT change any configurations! We have already found optimal cache config under nominal conditions. The cache can't magically reoptimize itself =)
