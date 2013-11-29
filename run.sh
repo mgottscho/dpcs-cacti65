@@ -1,6 +1,9 @@
 #!/bin/bash
 # Author: Mark Gottscho
 
+mkdir output
+mkdir logs
+
 # L1 Config A
 ./cacti -infile configs/baseA_L1_64KB.cfg > logs/baseA_L1_64KB.log
 mv dpcs_cacti_results.csv output/baseA_L1_64KB.csv

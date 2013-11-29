@@ -775,8 +775,6 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 	//DPCS: We already did a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config. 
 
 	for (int i = NUM_VDD_INPUT_LEVELS-1; i >= 0; i--) { //DPCS: loop over all voltages in 10 mV increments
-		row_of_dpcs_output_csv(fin_res, &file);
-
 		//DPCS: Scale VDD, and update technology parameters for SRAM cells
 		scaled_vdd = fet_data[i].vdd;
 		g_tp.sram_cell.Vdd = scaled_vdd;
@@ -793,7 +791,7 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 		fin_res->find_energy();
 		fin_res->find_area();
 		fin_res->find_cyc();
-
+		
 		//DPCS: Console reporting
 		cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //DPCS
 		cout << endl << "********* VOLTAGE-SCALED SRAM CELL FET PARAMETERS **********" << endl; //DPCS
@@ -803,11 +801,10 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 		cout << endl << "******************** CACHE DATA ************************" << endl; //DPCS
 		output_UCA(fin_res);
 		cout << "********************************************************" << endl; //DPCS
+		
+		row_of_dpcs_output_csv(fin_res, &file); //DPCS: output to the CSV
 	}
 	
-	//Output last row of the DPCS output CSV
-	row_of_dpcs_output_csv(fin_res, &file);
-
 	file.close();
 }
 

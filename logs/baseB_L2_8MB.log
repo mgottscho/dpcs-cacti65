@@ -106,10 +106,10 @@ SRAM cell transistor:
   n_to_p_eff_curr_drv_ratio = 2.41
 
 DRAM access transistor: 
-  C_g_ideal = -3.10167e-91 F/um
-  C_fringe  = 6.90226e-310 F/um
-  C_overlap = -6.20334e-92 F/um
-  C_junc    = -3.10167e-91 F/um^2
+  C_g_ideal = 1.00927e-151 F/um
+  C_fringe  = 6.91709e-310 F/um
+  C_overlap = 2.01854e-152 F/um
+  C_junc    = 1.00927e-151 F/um^2
   l_phy     =            0 um
   l_elec    = 3.24259e-317 um
   R_nch_on  =            0 ohm-um   (nominal 0 ohm-um)
@@ -117,7 +117,7 @@ DRAM access transistor:
   Vdd  =            0 V   (nominal 0 V)
   Vth       =            0 V
   Vdsat       =       0.0938 V
-  I_on_n	  = 6.90226e-310 A/um   (nominal 6.90226e-310 A/um)
+  I_on_n	  = 6.91708e-310 A/um   (nominal 6.91708e-310 A/um)
   I_on_p	  =            0 A/um   (nominal 0 A/um)
   I_off_n	  =            0 A/um   (nominal 0 A/um)
   I_off_p	  =            0 A/um   (nominal 0 A/um)
@@ -126,21 +126,21 @@ DRAM access transistor:
   n_to_p_eff_curr_drv_ratio = 0
 
 DRAM wordline transistor: 
-  C_g_ideal = -3.10167e-91 F/um
-  C_fringe  = 6.90226e-310 F/um
-  C_overlap = -6.20334e-92 F/um
-  C_junc    = -3.10167e-91 F/um^2
+  C_g_ideal = 1.00927e-151 F/um
+  C_fringe  = 6.91709e-310 F/um
+  C_overlap = 2.01854e-152 F/um
+  C_junc    = 1.00927e-151 F/um^2
   l_phy     =            0 um
   l_elec    = 3.24259e-317 um
-  R_nch_on  = 6.90226e-310 ohm-um   (nominal 6.90226e-310 ohm-um)
-  R_pch_on  = 6.90226e-310 ohm-um   (nominal 6.90226e-310 ohm-um)
+  R_nch_on  = 6.91708e-310 ohm-um   (nominal 6.91708e-310 ohm-um)
+  R_pch_on  = 6.91709e-310 ohm-um   (nominal 6.91709e-310 ohm-um)
   Vdd  =            0 V   (nominal 0 V)
   Vth       =            0 V
   Vdsat       =            0 V
-  I_on_n	  = 6.90226e-310 A/um   (nominal 6.90226e-310 A/um)
+  I_on_n	  = 6.91708e-310 A/um   (nominal 6.91708e-310 A/um)
   I_on_p	  =            0 A/um   (nominal 0 A/um)
-  I_off_n	  = 6.90226e-310 A/um   (nominal 6.90226e-310 A/um)
-  I_off_p	  = 6.90226e-310 A/um   (nominal 6.90226e-310 A/um)
+  I_off_n	  = 6.91709e-310 A/um   (nominal 6.91709e-310 A/um)
+  I_off_p	  = 6.91709e-310 A/um   (nominal 6.91709e-310 A/um)
   C_ox      =            0 F/um^2
   t_ox      =            0 um
   n_to_p_eff_curr_drv_ratio = 2.51973e-322
