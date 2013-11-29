@@ -79,17 +79,27 @@ void TechnologyParameter::DeviceType::display(uint32_t indent)
 }
 
 //DPCS
-void display_sram_cell_params() {
+void display_sram_cell_fet_params() {
 	  cout << "\t" << "R_nch_on  = " << setw(12) << g_tp.sram_cell.R_nch_on  << " ohm-um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_R_nch_on << " ohm-um)" << endl; //DPCS
 	  cout << "\t" << "R_pch_on  = " << setw(12) << g_tp.sram_cell.R_pch_on  << " ohm-um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_R_pch_on << " ohm-um)" << endl; //DPCS
 	  cout << "\t" << "Vdd  = " << setw(12) << g_tp.sram_cell.Vdd  << " V" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_Vdd << " V)" << endl; //DPCS
 	  cout << "\t" << "I_on_n	  = " << setw(12) << g_tp.sram_cell.I_on_n  << " A/um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_I_on_n << " A/um)" << endl; //DPCS
-	  //cout << "\t" << "I_on_p	  = " << setw(12) << g_tp.sram_cell.I_on_p  << " A/um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_I_on_p << " A/um)" << endl; //DPCS
+	  cout << "\t" << "I_on_p	  = " << setw(12) << g_tp.sram_cell.I_on_p  << " A/um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_I_on_p << " A/um)" << endl; //DPCS
 	  cout << "\t" << "I_off_n	  = " << setw(12) << g_tp.sram_cell.I_off_n  << " A/um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_I_off_n << " A/um)" << endl; //DPCS
-	  //cout << "\t" << "I_off_p	  = " << setw(12) << g_tp.sram_cell.I_off_p  << " A/um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_I_off_p << " A/um)" << endl; //DPCS
+	  cout << "\t" << "I_off_p	  = " << setw(12) << g_tp.sram_cell.I_off_p  << " A/um" << setw(12) << "(nominal " << g_tp.sram_cell.nominal_I_off_p << " A/um)" << endl; //DPCS
 }
 
 
+//DPCS
+void display_peri_global_fet_params() {
+	  cout << "\t" << "R_nch_on  = " << setw(12) << g_tp.peri_global.R_nch_on  << " ohm-um" << setw(12) << "(nominal " << g_tp.peri_global.nominal_R_nch_on << " ohm-um)" << endl; //DPCS
+	  cout << "\t" << "R_pch_on  = " << setw(12) << g_tp.peri_global.R_pch_on  << " ohm-um" << setw(12) << "(nominal " << g_tp.peri_global.nominal_R_pch_on << " ohm-um)" << endl; //DPCS
+	  cout << "\t" << "Vdd  = " << setw(12) << g_tp.peri_global.Vdd  << " V" << setw(12) << "(nominal " << g_tp.peri_global.nominal_Vdd << " V)" << endl; //DPCS
+	  cout << "\t" << "I_on_n	  = " << setw(12) << g_tp.peri_global.I_on_n  << " A/um" << setw(12) << "(nominal " << g_tp.peri_global.nominal_I_on_n << " A/um)" << endl; //DPCS
+	  cout << "\t" << "I_on_p	  = " << setw(12) << g_tp.peri_global.I_on_p  << " A/um" << setw(12) << "(nominal " << g_tp.peri_global.nominal_I_on_p << " A/um)" << endl; //DPCS
+	  cout << "\t" << "I_off_n	  = " << setw(12) << g_tp.peri_global.I_off_n  << " A/um" << setw(12) << "(nominal " << g_tp.peri_global.nominal_I_off_n << " A/um)" << endl; //DPCS
+	  cout << "\t" << "I_off_p	  = " << setw(12) << g_tp.peri_global.I_off_p  << " A/um" << setw(12) << "(nominal " << g_tp.peri_global.nominal_I_off_p << " A/um)" << endl; //DPCS
+}
 
 void TechnologyParameter::InterconnectType::display(uint32_t indent)
 {

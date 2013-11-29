@@ -619,6 +619,7 @@ void input_fet_spice_data_csv() { //DPCS
 
 	string element;
 	int i = NUM_VDD_INPUT_LEVELS-1;
+	double current_multiplier = 1000/67; //DPCS: Customize me. For a L=45nm W=67nm transistor, we multiply all input current values by this value to get A/um as needed by CACTI tool.
 
 	getline(file,element); //throw out two header rows
 	getline(file,element);
@@ -629,39 +630,38 @@ void input_fet_spice_data_csv() { //DPCS
 
 		//read NMOS RVT ION
 		getline(file,element,',');
-		fet_data[i].nmos_rvt_Ion = atof(element.c_str());
+		fet_data[i].nmos_rvt_Ion = atof(element.c_str()) * current_multiplier;
 
 		//read NMOS RVT IOFF
 		getline(file,element,',');
-		fet_data[i].nmos_rvt_Ioff = atof(element.c_str());
+		fet_data[i].nmos_rvt_Ioff = atof(element.c_str()) * current_multiplier;
 		
 		//read NMOS LVT ION
 		getline(file,element,',');
-		fet_data[i].nmos_lvt_Ion = atof(element.c_str());
+		fet_data[i].nmos_lvt_Ion = atof(element.c_str()) * current_multiplier;
 
 		//read NMOS LVT IOFF
 		getline(file,element,',');
-		fet_data[i].nmos_lvt_Ioff = atof(element.c_str());
+		fet_data[i].nmos_lvt_Ioff = atof(element.c_str()) * current_multiplier;
 		
 		//read PMOS RVT ION
 		getline(file,element,',');
-		fet_data[i].pmos_rvt_Ion = atof(element.c_str());
+		fet_data[i].pmos_rvt_Ion = atof(element.c_str()) * current_multiplier;
 
 		//read PMOS RVT IOFF
 		getline(file,element,',');
-		fet_data[i].pmos_rvt_Ioff = atof(element.c_str());
+		fet_data[i].pmos_rvt_Ioff = atof(element.c_str()) * current_multiplier;
 		
 		//read PMOS LVT ION
 		getline(file,element,',');
-		fet_data[i].pmos_lvt_Ion = atof(element.c_str());
+		fet_data[i].pmos_lvt_Ion = atof(element.c_str()) * current_multiplier;
 
 		//read PMOS LVT IOFF
 		getline(file,element); //end of line
-		fet_data[i].pmos_lvt_Ioff = atof(element.c_str());
+		fet_data[i].pmos_lvt_Ioff = atof(element.c_str()) * current_multiplier;
 
 		i--;
 	}
-	cout << "Finished reading FET SPICE data CSV." << endl;
 }
 
 //DPCS: Set effective resistance, computed with standard CACTI model from technology.cc. Note that P channel resistance is not computed using the actual PFET data, to stay consistent with CACTI treating PFET as just for kicks.
@@ -701,6 +701,13 @@ void set_fet_technology_parameters() { //DPCS
   g_tp.peri_global.I_off_n = g_tp.peri_global.nominal_I_off_n;
   g_tp.peri_global.I_on_p = g_tp.peri_global.nominal_I_on_p;
   g_tp.peri_global.I_off_p = g_tp.peri_global.nominal_I_off_p;
+
+  //Update effective resistance and set the nominal values
+  update_effective_resistance();
+  g_tp.sram_cell.nominal_R_nch_on = g_tp.sram_cell.R_nch_on;
+  g_tp.sram_cell.nominal_R_pch_on = g_tp.sram_cell.R_pch_on;
+  g_tp.peri_global.nominal_R_nch_on = g_tp.peri_global.R_nch_on;
+  g_tp.peri_global.nominal_R_pch_on = g_tp.peri_global.R_pch_on;
 }
 
 void row_of_dpcs_output_csv(uca_org_t *fin_res, ofstream *file) { //DPCS
@@ -759,13 +766,10 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 
 	//DPCS: Let's begin the VDD scaling goodness. Print out the initial conditions.
 	double scaled_vdd = fet_data[NUM_VDD_INPUT_LEVELS-1].vdd;
-	cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //DPCS
-	cout << endl << "********* VOLTAGE-SCALED SRAM CELL PARAMETERS **********" << endl; //DPCS
-	display_sram_cell_params(); //DPCS
-	cout << "********************************************************" << endl; //DPCS
-
-	cout << endl << "******************** CACHE DATA ************************" << endl; //DPCS
-	output_UCA(fin_res);
+	
+	cout << endl << ">>>>>>>>>>>>>>>>> PERIPHERY/GLOBAL VDD = " << scaled_vdd << " V" << endl; //DPCS
+	cout << endl << "********* PERIPHERY/GLOBAL FET PARAMETERS **********" << endl; //DPCS
+	display_peri_global_fet_params(); //DPCS
 	cout << "********************************************************" << endl; //DPCS
 
 	//DPCS: We already did a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config. 
@@ -792,8 +796,8 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 
 		//DPCS: Console reporting
 		cout << endl << ">>>>>>>>>>>>>>>>> SRAM CELL VDD = " << scaled_vdd << " V" << endl; //DPCS
-		cout << endl << "********* VOLTAGE-SCALED SRAM CELL PARAMETERS **********" << endl; //DPCS
-		display_sram_cell_params(); //DPCS
+		cout << endl << "********* VOLTAGE-SCALED SRAM CELL FET PARAMETERS **********" << endl; //DPCS
+		display_sram_cell_fet_params(); //DPCS
 		cout << "********************************************************" << endl; //DPCS
 
 		cout << endl << "******************** CACHE DATA ************************" << endl; //DPCS
@@ -826,14 +830,17 @@ uca_org_t cacti_interface(const string & infile_name)
 		g_ip->display_ip();
 		cout << "**************************************************" << endl; //DPCS
 	}
-	
+
 	//DPCS: Initialize standard CACTI tech params
 	init_tech_params(g_ip->F_sz_um, false);
 	Wire winit; // Do not delete this line. It initializes wires.
 
 	//DPCS: Set our custom technology parameters, read from a file.
+	input_fet_spice_data_csv(); //DPCS
 	set_fet_technology_parameters(); //DPCS
 	update_effective_resistance(); //DPCS
+
+	display_peri_global_fet_params();
 
 	//DPCS: Okay, let's show off the resulting tech parameters that we will use.
 	cout << endl << "**************** TECHNOLOGY PARAMETERS *****************" << endl; //DPCS
@@ -841,11 +848,11 @@ uca_org_t cacti_interface(const string & infile_name)
 	cout << "********************************************************" << endl; //DPCS
 
 	//DPCS: This shouldn't get called, we haven't played with NUCA yet
-	if (g_ip->nuca == 1)
+	/*if (g_ip->nuca == 1)
 	{
 		Nuca n(&g_tp.peri_global);
 		n.sim_nuca();
-	}
+	}*/
 
 //  g_ip->display_ip();
 

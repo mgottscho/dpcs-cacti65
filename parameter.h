@@ -319,7 +319,8 @@ class DynamicParameter
     bool   is_valid;
 };
 
-void display_sram_cell_params(); //DPCS
+void display_sram_cell_fet_params(); //DPCS
+void display_peri_global_fet_params(); //DPCS
 
 extern InputParameter * g_ip;
 extern TechnologyParameter g_tp;

@@ -584,7 +584,7 @@ void solve(uca_org_t *fin_res)
   int    pure_ram = (!g_ip->is_cache || g_ip->is_main_mem);
 
 
-  init_tech_params(g_ip->F_sz_um, false);
+  //init_tech_params(g_ip->F_sz_um, false); //DPCS: comment this out, it breaks our custom FET params input.
 
 
   list<mem_array *> tag_arr (0);
@@ -622,7 +622,7 @@ void solve(uca_org_t *fin_res)
     is_tag              = true;
     ram_cell_tech_type  = g_ip->tag_arr_ram_cell_tech_type;
     is_dram             = ((ram_cell_tech_type == lp_dram) || (ram_cell_tech_type == comm_dram));
-    init_tech_params(g_ip->F_sz_um, is_tag);
+    //init_tech_params(g_ip->F_sz_um, is_tag); //DPCS: comment this out, we don't want to overwrite the values we already initialized
 
     for (uint32_t t = 0; t < nthreads; t++)
     {
@@ -653,7 +653,7 @@ void solve(uca_org_t *fin_res)
     is_tag              = false;
     ram_cell_tech_type  = g_ip->data_arr_ram_cell_tech_type;
     is_dram             = ((ram_cell_tech_type == lp_dram) || (ram_cell_tech_type == comm_dram));
-    init_tech_params(g_ip->F_sz_um, is_tag);
+    //init_tech_params(g_ip->F_sz_um, is_tag); //DPCS: comment this out, we don't want to overwrite our custom tech params we input from a file
 
     for (uint32_t t = 0; t < nthreads; t++)
     {
