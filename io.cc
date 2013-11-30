@@ -748,7 +748,8 @@ void row_of_dpcs_output_csv(uca_org_t *fin_res, ofstream *file) { //DPCS
 	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage / fin_res->data_array2->power.readOp.leakage << ", ";
 	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage / fin_res->power.readOp.leakage << ", ";
 	(*file) << fin_res->tag_array2->power_bitlines.readOp.leakage / fin_res->tag_array2->power.readOp.leakage << ", ";
-	(*file) << fin_res->tag_array2->power_bitlines.readOp.leakage / fin_res->power.readOp.leakage << endl;
+	(*file) << fin_res->tag_array2->power_bitlines.readOp.leakage / fin_res->power.readOp.leakage << ", ";
+	(*file) << g_ip->nbanks << endl;
 }
 
 void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
@@ -763,10 +764,10 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 
 	//DPCS: Print the CSV column header
 	file << "Data array voltage (V), ";
-	file << "SRAM cell nfet on current (A), ";
-	file << "SRAM cell nfet off current (A), ";
-	file << "SRAM cell pfet on current UNUSED (A), ";
-	file << "SRAM cell pfet off current UNUSED (A), ";
+	file << "SRAM cell nfet on current (A/um), ";
+	file << "SRAM cell nfet off current (A/um), ";
+	file << "SRAM cell pfet on current UNUSED (A/um), ";
+	file << "SRAM cell pfet off current UNUSED (A/um), ";
 	file << "SRAM cell nfet on resistance (ohm-um), ";
 	file << "SRAM cell pfet on resistance (ohm-um), ";
 	file << "Access time (ns), ";
@@ -780,7 +781,8 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 	file << "Data cells / data array power, ";
 	file << "Data cells / total power, ";
 	file << "Tag cells / tag array power, ";
-	file << "Tag cells / total power" << endl;
+	file << "Tag cells / total power, ";
+	file << "No. banks" << endl;
 
 	//DPCS: Let's begin the VDD scaling goodness. Print out the initial conditions.
 	double scaled_vdd = fet_data[NUM_VDD_INPUT_LEVELS-1].vdd;
@@ -792,7 +794,7 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 
 	//DPCS: We already did a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config. 
 
-	for (int i = NUM_VDD_INPUT_LEVELS-1; i >= 0; i--) { //DPCS: loop over all voltages in 10 mV increments
+	for (int i = NUM_VDD_INPUT_LEVELS-1; i >= 10; i--) { //DPCS: loop over all voltages in 10 mV increments
 		//DPCS: Scale VDD, and update technology parameters for SRAM cells
 		scaled_vdd = fet_data[i].vdd;
 		g_tp.sram_cell.Vdd = scaled_vdd;
