@@ -1,3 +1,4 @@
 cacti
-obj_opt/
-out.csv
+*.o
+*.csv
+*.log
