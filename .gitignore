@@ -1,4 +1,5 @@
 cacti
+output/*
+logs/*
 *.o
-*.csv
-*.log
+out.csv

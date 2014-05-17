@@ -58,7 +58,7 @@
 using namespace std;
 
 
-VoltageData fet_data[NUM_VDD_INPUT_LEVELS]; //DPCS
+voltagedata_t fet_data[NUM_VDD_INPUT_LEVELS]; //DPCS
 
 /* Parses "cache.cfg" file */
   void
@@ -621,62 +621,143 @@ void input_fet_spice_data_csv() { //DPCS
 	int i = NUM_VDD_INPUT_LEVELS-1;
 	double current_multiplier = 1000/67; //DPCS: Customize me. For a L=45nm W=67nm transistor, we multiply all input current values by this value to get A/um as needed by CACTI tool.
 
-	getline(file,element); //throw out two header rows
+	getline(file,element); //DPCS: throw out two header rows
 	getline(file,element);
+
+	//DPCS: NOTE: MAKE SURE that the CSV is sorted by the same way as we read it in! We don't check headers for correctness,
+	//so it is possible that RVT and HVT could be mixed up, etc.
+	//FIXME: actually make this not an assumption
 	while (!file.eof() && i >= 0) {
 		//read voltage
 		getline(file,element,',');
 		fet_data[i].vdd = atof(element.c_str());
 		
-		//read NMOS HVT ION
+		//read hvtnfet_off
 		getline(file,element,',');
-		fet_data[i].nmos_hvt_Ion = atof(element.c_str()) * current_multiplier;
-
-		//read NMOS HVT IOFF
+		fet_data[i].hvtnfet_off = atof(element.c_str()) * current_multiplier;
+		//read hvtnfet_on
 		getline(file,element,',');
-		fet_data[i].nmos_hvt_Ioff = atof(element.c_str()) * current_multiplier;
-
-		//read NMOS RVT ION
-		getline(file,element,',');
-		fet_data[i].nmos_rvt_Ion = atof(element.c_str()) * current_multiplier;
-
-		//read NMOS RVT IOFF
-		getline(file,element,',');
-		fet_data[i].nmos_rvt_Ioff = atof(element.c_str()) * current_multiplier;
+		fet_data[i].hvtnfet_on = atof(element.c_str()) * current_multiplier;
 		
-		//read NMOS LVT ION
+		//read hvtpfet_off
 		getline(file,element,',');
-		fet_data[i].nmos_lvt_Ion = atof(element.c_str()) * current_multiplier;
-
-		//read NMOS LVT IOFF
+		fet_data[i].hvtpfet_off = atof(element.c_str()) * current_multiplier;
+		//read hvtpfet_on
 		getline(file,element,',');
-		fet_data[i].nmos_lvt_Ioff = atof(element.c_str()) * current_multiplier;
-
-
-
-		//read PMOS HVT ION
-		getline(file,element,',');
-		fet_data[i].pmos_hvt_Ion = atof(element.c_str()) * current_multiplier;
-
-		//read PMOS HVT IOFF
-		getline(file,element,',');
-		fet_data[i].pmos_hvt_Ioff = atof(element.c_str()) * current_multiplier;
+		fet_data[i].hvtpfet_on = atof(element.c_str()) * current_multiplier;
 		
-		//read PMOS RVT ION
+		//read lvtnfet_off
 		getline(file,element,',');
-		fet_data[i].pmos_rvt_Ion = atof(element.c_str()) * current_multiplier;
-
-		//read PMOS RVT IOFF
+		fet_data[i].lvtnfet_off = atof(element.c_str()) * current_multiplier;
+		//read lvtnfet_on
 		getline(file,element,',');
-		fet_data[i].pmos_rvt_Ioff = atof(element.c_str()) * current_multiplier;
+		fet_data[i].lvtnfet_on = atof(element.c_str()) * current_multiplier;
 		
-		//read PMOS LVT ION
+		//read lvtpfet_off
+		fet_data[i].lvtpfet_off = atof(element.c_str()) * current_multiplier;
+		//read lvtpfet_on
 		getline(file,element,',');
-		fet_data[i].pmos_lvt_Ion = atof(element.c_str()) * current_multiplier;
+		fet_data[i].lvtpfet_on = atof(element.c_str()) * current_multiplier;
+		
+		//read rvtnfet_off
+		getline(file,element,',');
+		fet_data[i].rvtnfet_off = atof(element.c_str()) * current_multiplier;
+		//read rvtnfet_on
+		getline(file,element,',');
+		fet_data[i].rvtnfet_on = atof(element.c_str()) * current_multiplier;
 
-		//read PMOS LVT IOFF
+		//read rvtpfet_off
+		getline(file,element,',');
+		fet_data[i].rvtpfet_off = atof(element.c_str()) * current_multiplier;
+		//read rvtpfet_on
+		getline(file,element,',');
+		fet_data[i].rvtpfet_on = atof(element.c_str()) * current_multiplier;
+
+		//read srpdanfet_off
+		getline(file,element,',');
+		fet_data[i].srpdanfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpdanfet_on
+		getline(file,element,',');
+		fet_data[i].srpdanfet_on = atof(element.c_str()) * current_multiplier;
+		
+		//read srpdbnfet_off
+		getline(file,element,',');
+		fet_data[i].srpdbnfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpdbnfet_on
+		getline(file,element,',');
+		fet_data[i].srpdbnfet_on = atof(element.c_str()) * current_multiplier;
+		
+		//read srpdcnfet_off
+		getline(file,element,',');
+		fet_data[i].srpdcnfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpdcnfet_on
+		getline(file,element,',');
+		fet_data[i].srpdcnfet_on = atof(element.c_str()) * current_multiplier;
+
+		//read srpdlnfet_off
+		getline(file,element,',');
+		fet_data[i].srpdlnfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpdlnfet_on
+		getline(file,element,',');
+		fet_data[i].srpdlnfet_on = atof(element.c_str()) * current_multiplier;
+
+		//read srpganfet_off
+		getline(file,element,',');
+		fet_data[i].srpganfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpganfet_on
+		getline(file,element,',');
+		fet_data[i].srpganfet_on = atof(element.c_str()) * current_multiplier;
+
+		//read srpgbnfet_off
+		getline(file,element,',');
+		fet_data[i].srpgbnfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpgbnfet_on
+		getline(file,element,',');
+		fet_data[i].srpgbnfet_on = atof(element.c_str()) * current_multiplier;
+		
+		//read srpgcnfet_off
+		getline(file,element,',');
+		fet_data[i].srpgcnfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpgcnfet_on
+		getline(file,element,',');
+		fet_data[i].srpgcnfet_on = atof(element.c_str()) * current_multiplier;
+
+		//read srpglnfet_off
+		getline(file,element,',');
+		fet_data[i].srpglnfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpglnfet_on
+		getline(file,element,',');
+		fet_data[i].srpglnfet_on = atof(element.c_str()) * current_multiplier;
+
+		//read srpuapfet_off
+		getline(file,element,',');
+		fet_data[i].srpuapfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpuapfet_on
+		getline(file,element,',');
+		fet_data[i].srpuapfet_on = atof(element.c_str()) * current_multiplier;
+
+		//read srpubpfet_off
+		getline(file,element,',');
+		fet_data[i].srpubpfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpubpfet_on
+		getline(file,element,',');
+		fet_data[i].srpubpfet_on = atof(element.c_str()) * current_multiplier;
+
+		//read srpucpfet_off
+		getline(file,element,',');
+		fet_data[i].srpucpfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpucpfet_on
+		getline(file,element,',');
+		fet_data[i].srpucpfet_on = atof(element.c_str()) * current_multiplier;
+
+		//read srpulpfet_off
+		getline(file,element,',');
+		fet_data[i].srpulpfet_off = atof(element.c_str()) * current_multiplier;
+		//read srpulpfet_on
+		getline(file,element,',');
+		fet_data[i].srpulpfet_on = atof(element.c_str()) * current_multiplier;
+
 		getline(file,element); //end of line
-		fet_data[i].pmos_lvt_Ioff = atof(element.c_str()) * current_multiplier;
 
 		i--;
 	}
@@ -697,15 +778,18 @@ void set_fet_technology_parameters() { //DPCS
   g_tp.sram_cell.nominal_Vdd = fet_data[NUM_VDD_INPUT_LEVELS-1].vdd; //DPCS
   g_tp.peri_global.nominal_Vdd = fet_data[NUM_VDD_INPUT_LEVELS-1].vdd; //DPCS
 
-  //DPCS: Set current values. SRAM uses RVT nfet/pfet, while periphery uses LVT nfet/pfet. As far as I know, PMOS is only for kicks in CACTI, it isn't actually used anywhere. Let's set it to technology data anyway though.
-  g_tp.sram_cell.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_hvt_Ion; 
-  g_tp.sram_cell.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_hvt_Ioff; 
-  g_tp.sram_cell.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_hvt_Ion; 
-  g_tp.sram_cell.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_hvt_Ioff; 
-  g_tp.peri_global.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_rvt_Ion; 
-  g_tp.peri_global.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].nmos_rvt_Ioff; 
-  g_tp.peri_global.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_rvt_Ion; 
-  g_tp.peri_global.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].pmos_rvt_Ioff; 
+  //DPCS: Set current values.
+  //DPCS: Customize me!
+  //DPCS: Right now, SRAM uses HVT nfet/pfet, while periphery uses RVT nfet/pfet.
+  //DPCS: As far as I know, PMOS is only for kicks in CACTI, it isn't actually used anywhere. Let's set it to technology data anyway though.
+  g_tp.sram_cell.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtnfet_on; 
+  g_tp.sram_cell.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtnfet_off; 
+  g_tp.sram_cell.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtpfet_on; 
+  g_tp.sram_cell.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtpfet_off;
+  g_tp.peri_global.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtnfet_on; 
+  g_tp.peri_global.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtnfet_off; 
+  g_tp.peri_global.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtpfet_on; 
+  g_tp.peri_global.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtpfet_off; 
 
   //DPCS: Okay, let's initialize the present values to nominal values.
   g_tp.sram_cell.Vdd = g_tp.sram_cell.nominal_Vdd;
@@ -798,10 +882,10 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 		//DPCS: Scale VDD, and update technology parameters for SRAM cells
 		scaled_vdd = fet_data[i].vdd;
 		g_tp.sram_cell.Vdd = scaled_vdd;
-		g_tp.sram_cell.I_on_n = fet_data[i].nmos_hvt_Ion;
-		g_tp.sram_cell.I_off_n = fet_data[i].nmos_hvt_Ioff; 
-		g_tp.sram_cell.I_on_p = fet_data[i].pmos_hvt_Ion;
-		g_tp.sram_cell.I_off_p = fet_data[i].pmos_hvt_Ioff; 
+		g_tp.sram_cell.I_on_n = fet_data[i].hvtnfet_on;
+		g_tp.sram_cell.I_off_n = fet_data[i].hvtnfet_off; 
+		g_tp.sram_cell.I_on_p = fet_data[i].hvtpfet_on;
+		g_tp.sram_cell.I_off_p = fet_data[i].hvtpfet_off; 
 		update_effective_resistance();
 
 		//DPCS: Recompute delay, power, etc. but do NOT change any configurations! We have already found optimal cache config under nominal conditions. The cache can't magically reoptimize itself =)

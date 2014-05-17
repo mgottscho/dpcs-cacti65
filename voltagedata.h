@@ -1,54 +1,67 @@
-//Author: Mark Gottscho <mgottscho@ucla.edu>
+// Author: Mark Gottscho 
+// <mgottscho@ucla.edu>
 
 #ifndef __VOLTAGE_DATA_HH__
 #define __VOLTAGE_DATA_HH__
 
 //DPCS
-class VoltageData
+typedef struct VoltageData
 {
-	public:
-		double vdd; //in V
+	double vdd; //in V
 
-		double nmos_hvt_Ion; //in A
-		double nmos_hvt_Ioff; //in A
+	double hvtnfet_off; //in A
+	double hvtnfet_on; //in A
+	
+	double hvtpfet_off; //in A
+	double hvtpfet_on; //in A
 
-		double nmos_rvt_Ion; //in A
-		double nmos_rvt_Ioff; //in A
+	double lvtnfet_off; //in A
+	double lvtnfet_on; //in A
 
-		double nmos_lvt_Ion; //in A
-		double nmos_lvt_Ioff; //in A
+	double lvtpfet_off; //in A
+	double lvtpfet_on; //in A
 
-		double pmos_hvt_Ion; //in A
-		double pmos_hvt_Ioff; //in A
-		
-		double pmos_rvt_Ion; //in A
-		double pmos_rvt_Ioff; //in A
+	double rvtnfet_off; //in A
+	double rvtnfet_on; //in A
+	
+	double rvtpfet_off; //in A
+	double rvtpfet_on; //in A
 
-		double pmos_lvt_Ion; //in A
-		double pmos_lvt_Ioff; //in A
+	double srpdanfet_off; //in A
+	double srpdanfet_on; //in A
 
-		VoltageData() {
-			vdd = 0;
-			
-			nmos_hvt_Ion = 0;
-			nmos_hvt_Ioff = 0;
-		
-			nmos_rvt_Ion = 0;
-			nmos_rvt_Ioff = 0;
-			
-			nmos_lvt_Ion = 0;
-			nmos_lvt_Ioff = 0;
+	double srpdbnfet_off; //in A
+	double srpdbnfet_on; //in A
 
+	double srpdcnfet_off; //in A
+	double srpdcnfet_on; //in A
 
-			pmos_hvt_Ion = 0;
-			pmos_hvt_Ioff = 0;
+	double srpdlnfet_off; //in A
+	double srpdlnfet_on; //in A
 
-			pmos_rvt_Ion = 0;
-			pmos_rvt_Ioff = 0;
-			
-			pmos_lvt_Ion = 0;
-			pmos_lvt_Ioff = 0;
-		}
-};
+	double srpganfet_off; //in A
+	double srpganfet_on; //in A
+
+	double srpgbnfet_off; //in A
+	double srpgbnfet_on; //in A
+
+	double srpgcnfet_off; //in A
+	double srpgcnfet_on; //in A
+
+	double srpglnfet_off; //in A
+	double srpglnfet_on; //in A
+
+	double srpuapfet_off; //in A
+	double srpuapfet_on; //in A
+
+	double srpubpfet_off; //in A
+	double srpubpfet_on; //in A
+
+	double srpucpfet_off; //in A
+	double srpucpfet_on; //in A
+
+	double srpulpfet_off; //in A
+	double srpulpfet_on; //in A
+} voltagedata_t;
 
 #endif
