@@ -627,6 +627,7 @@ void input_fet_spice_data_csv() { //DPCS
 	//DPCS: NOTE: MAKE SURE that the CSV is sorted by the same way as we read it in! We don't check headers for correctness,
 	//so it is possible that RVT and HVT could be mixed up, etc.
 	//FIXME: actually make this not an assumption
+	istringstream iss;
 	while (!file.eof() && i >= 0) {
 		//read voltage
 		getline(file,element,',');
@@ -654,6 +655,7 @@ void input_fet_spice_data_csv() { //DPCS
 		fet_data[i].lvtnfet_on = atof(element.c_str()) * current_multiplier;
 		
 		//read lvtpfet_off
+		getline(file,element,',');
 		fet_data[i].lvtpfet_off = atof(element.c_str()) * current_multiplier;
 		//read lvtpfet_on
 		getline(file,element,',');

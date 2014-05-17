@@ -3,3 +3,4 @@ output/*
 logs/*
 *.o
 out.csv
+dpcs_cacti_results.csv
