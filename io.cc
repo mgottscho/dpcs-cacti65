@@ -627,7 +627,6 @@ void input_fet_spice_data_csv() { //DPCS
 	//DPCS: NOTE: MAKE SURE that the CSV is sorted by the same way as we read it in! We don't check headers for correctness,
 	//so it is possible that RVT and HVT could be mixed up, etc.
 	//FIXME: actually make this not an assumption
-	istringstream iss;
 	while (!file.eof() && i >= 0) {
 		//read voltage
 		getline(file,element,',');
@@ -880,7 +879,7 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 
 	//DPCS: We already did a standard CACTI solve. Let's recompute power and delay on the exact same final result but using different scaled SRAM cell voltages, without changing the memory config. 
 
-	for (int i = NUM_VDD_INPUT_LEVELS-1; i >= 10; i--) { //DPCS: loop over all voltages in 10 mV increments
+	for (int i = NUM_VDD_INPUT_LEVELS-1; i >= 0; i--) { //DPCS: loop over all voltages in 10 mV increments
 		//DPCS: Scale VDD, and update technology parameters for SRAM cells
 		scaled_vdd = fet_data[i].vdd;
 		g_tp.sram_cell.Vdd = scaled_vdd;
