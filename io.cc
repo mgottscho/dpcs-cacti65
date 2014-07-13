@@ -827,6 +827,7 @@ void row_of_dpcs_output_csv(uca_org_t *fin_res, ofstream *file) { //DPCS
 	(*file) << fin_res->power.readOp.dynamic*1e9 << ", ";
 	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage * 1e3 << ", ";
 	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage/g_tp.sram_cell.Vdd/(g_ip->cache_sz*8)*g_ip->nbanks << ", ";
+	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage/(g_ip->cache_sz*8)*g_ip->nbanks << ", ";
 	(*file) << fin_res->data_array2->power.readOp.leakage * 1e3 << ", ";
 	(*file) << fin_res->tag_array2->power.readOp.leakage * 1e3 << ", ";
 	(*file) << fin_res->power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
@@ -860,6 +861,7 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 	file << "Dynamic read energy per access (nJ), ";
 	file << "Leakage power data cells (mW), ";
 	file << "Leakage current per data cell (A), ";
+	file << "Leakage power per data cell (mW), ";
 	file << "Leakage power data bank (mW), ";
 	file << "Leakage power tag bank (mW), ";
 	file << "Total leakage power (mW), ";
