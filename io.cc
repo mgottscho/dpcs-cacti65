@@ -827,7 +827,7 @@ void row_of_dpcs_output_csv(uca_org_t *fin_res, ofstream *file) { //DPCS
 	(*file) << fin_res->power.readOp.dynamic*1e9 << ", ";
 	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage * 1e3 << ", ";
 	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage/g_tp.sram_cell.Vdd/(g_ip->cache_sz*8)*g_ip->nbanks << ", ";
-	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage/(g_ip->cache_sz*8)*g_ip->nbanks << ", ";
+	(*file) << fin_res->data_array2->power_bitlines.readOp.leakage/(g_ip->cache_sz*8)*g_ip->nbanks*1e3 << ", ";
 	(*file) << fin_res->data_array2->power.readOp.leakage * 1e3 << ", ";
 	(*file) << fin_res->tag_array2->power.readOp.leakage * 1e3 << ", ";
 	(*file) << fin_res->power.readOp.leakage* g_ip->nbanks * 1e3 << ", ";
