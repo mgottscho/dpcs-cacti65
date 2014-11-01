@@ -783,14 +783,25 @@ void set_fet_technology_parameters() { //DPCS
   //DPCS: Customize me!
   //DPCS: Right now, SRAM uses HVT nfet/pfet, while periphery uses RVT nfet/pfet.
   //DPCS: As far as I know, PMOS is only for kicks in CACTI, it isn't actually used anywhere. Let's set it to technology data anyway though.
-  g_tp.sram_cell.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtnfet_on; 
-  g_tp.sram_cell.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtnfet_off; 
-  g_tp.sram_cell.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtpfet_on; 
-  g_tp.sram_cell.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtpfet_off;
-  g_tp.peri_global.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtnfet_on; 
-  g_tp.peri_global.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtnfet_off; 
-  g_tp.peri_global.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtpfet_on; 
-  g_tp.peri_global.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtpfet_off; 
+  //g_tp.sram_cell.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtnfet_on; 
+  //g_tp.sram_cell.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtnfet_off; 
+  //g_tp.sram_cell.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtpfet_on; 
+  //g_tp.sram_cell.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtpfet_off;
+  //g_tp.peri_global.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtnfet_on; 
+  //g_tp.peri_global.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtnfet_off; 
+  //g_tp.peri_global.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtpfet_on; 
+  //g_tp.peri_global.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].rvtpfet_off; 
+  
+  //DPCS: Right now, SRAM uses SRPDA nfet/SRPDU pfet, while periphery uses HVT nfet/pfet.
+  //DPCS: As far as I know, PMOS is only for kicks in CACTI, it isn't actually used anywhere. Let's set it to technology data anyway though.
+  g_tp.sram_cell.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].srpdanfet_on; 
+  g_tp.sram_cell.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].srpdanfet_off; 
+  g_tp.sram_cell.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].srpuapfet_on; 
+  g_tp.sram_cell.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].srpuapfet_off;
+  g_tp.peri_global.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtnfet_on; 
+  g_tp.peri_global.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtnfet_off; 
+  g_tp.peri_global.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtpfet_on; 
+  g_tp.peri_global.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].hvtpfet_off; 
 
   //DPCS: Okay, let's initialize the present values to nominal values.
   g_tp.sram_cell.Vdd = g_tp.sram_cell.nominal_Vdd;
