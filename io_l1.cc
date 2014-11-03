@@ -794,14 +794,14 @@ void set_fet_technology_parameters() { //DPCS
   
   //DPCS: Right now, SRAM uses specialized SRAM FETs, while periphery uses HVT nfet/pfet.
   //DPCS: As far as I know, PMOS is only for kicks in CACTI, it isn't actually used anywhere. Let's set it to technology data anyway though.
-  g_tp.sram_cell.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].srpdcnfet_on; 
-  g_tp.sram_cell.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].srpdcnfet_off; 
-  g_tp.sram_cell.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].srpucpfet_on; 
-  g_tp.sram_cell.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].srpucpfet_off;
-  g_tp.peri_global.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].srpdcnfet_on; 
-  g_tp.peri_global.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].srpdcnfet_off; 
-  g_tp.peri_global.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].srpucpfet_on; 
-  g_tp.peri_global.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].srpucpfet_off; 
+  g_tp.sram_cell.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].srpdlnfet_on; 
+  g_tp.sram_cell.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].srpdlnfet_off; 
+  g_tp.sram_cell.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].srpulpfet_on; 
+  g_tp.sram_cell.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].srpulpfet_off;
+  g_tp.peri_global.nominal_I_on_n = fet_data[NUM_VDD_INPUT_LEVELS-1].srpdlnfet_on; 
+  g_tp.peri_global.nominal_I_off_n = fet_data[NUM_VDD_INPUT_LEVELS-1].srpdlnfet_off; 
+  g_tp.peri_global.nominal_I_on_p = fet_data[NUM_VDD_INPUT_LEVELS-1].srpulpfet_on; 
+  g_tp.peri_global.nominal_I_off_p = fet_data[NUM_VDD_INPUT_LEVELS-1].srpulpfet_off; 
 
   //DPCS: Okay, let's initialize the present values to nominal values.
   g_tp.sram_cell.Vdd = g_tp.sram_cell.nominal_Vdd;
@@ -896,10 +896,10 @@ void do_dpcs_modeling_magic(uca_org_t *fin_res) { //DPCS
 		//DPCS: Scale VDD, and update technology parameters for SRAM cells
 		scaled_vdd = fet_data[i].vdd;
 		g_tp.sram_cell.Vdd = scaled_vdd;
-		g_tp.sram_cell.I_on_n = fet_data[i].srpdcnfet_on;
-		g_tp.sram_cell.I_off_n = fet_data[i].srpdcnfet_off; 
-		g_tp.sram_cell.I_on_p = fet_data[i].srpucpfet_on;
-		g_tp.sram_cell.I_off_p = fet_data[i].srpucpfet_off; 
+		g_tp.sram_cell.I_on_n = fet_data[i].srpdlnfet_on;
+		g_tp.sram_cell.I_off_n = fet_data[i].srpdlnfet_off; 
+		g_tp.sram_cell.I_on_p = fet_data[i].srpulpfet_on;
+		g_tp.sram_cell.I_off_p = fet_data[i].srpulpfet_off; 
 		update_effective_resistance();
 
 		//DPCS: Recompute delay, power, etc. but do NOT change any configurations! We have already found optimal cache config under nominal conditions. The cache can't magically reoptimize itself =)
